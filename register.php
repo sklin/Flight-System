@@ -1,8 +1,9 @@
 <?php
     session_save_path('./sessions');
     session_start();
+    include_once('config.php');
     $account = $_POST['account'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password']);
     $is_admin = $_POST['is_admin'];
     
     if(!$account)
@@ -34,8 +35,6 @@
         #print "is_admin!==null<\br>";
         $is_admin = 1;
     }
-    include_once('config.php');
-
     try
     {
         $dsn = "mysql:host=$db_host;dbname=$db_name";

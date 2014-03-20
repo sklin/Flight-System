@@ -1,6 +1,7 @@
 <?php
     session_save_path('./sessions');
     session_start();
+    include_once('config.php');
 
     $account = $_POST['account'];
     $password = $_POST['password'];
@@ -19,7 +20,6 @@
         header("Location: login.php");
         exit();
     }
-    include_once('config.php');
     try
     {
         $dsn = "mysql:host=$db_host;dbname=$db_name";
@@ -34,16 +34,18 @@
 #        $sql = "SELECT account, password FROM `user`"
 #             . " WHERE `account` = ? AND `password` = ?";
         $sql = "SELECT account, password, is_admin FROM `user`"
-             . " WHERE `account` = ? AND `password` = ?";
+             . " WHERE `account` = ?";
+#             . " WHERE `account` = ? AND `password` = ?";
         $sth = $db->prepare($sql);
-        $result = $sth->execute(array($account,$password));
+        $result = $sth->execute(array($account));
         if($result)
         {
             #echo "<br>Execute success!</br>";
             #header("Location: login.php");
             
-#            if($sth->fetchObject())
-            if($temp = $sth->fetchObject())
+            $temp = $sth->fetchObject();
+#            $hash = $temp->password
+            if(password_verify($password,$temp->password))
             {
                 $_SESSION['account'] = $_POST['account'];
                 $_SESSION['is_admin'] = $temp->is_admin;

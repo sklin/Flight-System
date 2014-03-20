@@ -6,5 +6,6 @@
 </head>
 <body>
     <h1>Error</h1>
+    <img src="http://i.imgur.com/RoJK6AX.gif">
 </body>
 </html>

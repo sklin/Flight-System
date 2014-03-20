@@ -1,6 +1,7 @@
 <?php
     session_save_path('./sessions');
     session_start();
+    include_once('config.php');
     if($_SESSION['account']){
         header("Location: main.php");
         exit();
