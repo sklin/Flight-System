@@ -1,97 +1,128 @@
 <?php
-    session_save_path('./sessions');
-    session_start();
-    include_once('config.php');
 
-    if(!$_SESSION['account'])
-    {
-        header("Location: login.php");
-        exit();
-    }
-    else
-    {
+session_save_path('./sessions');
+session_start();
+include_once('config.php');
 
-        echo "<!doctype html>"."\n";
-        echo '<html lang="en">'."\n";
-        echo "<head>"."\n";
-        echo '<meta charset="utf-8">'."\n";
-        echo "<title>Welcome to flight schedule system!</title>"."\n";
-        echo "</head>"."\n";
-        echo "<body>"."\n";
-        echo '<h5><a href="logout.php">logout</a></h5>'."\n";
-        echo "<h1>Main page</h1>"."\n";
+if(!$_SESSION['account']){
+    header("Location: login.php");
+}
+else{
+    # For Admin
+    if($_SESSION['is_admin']){
         try{
             $dsn = "mysql:host=$db_host;dbname=$db_name";
             $db = new PDO($dsn,$db_user,$db_password);
         }catch (PDOException $ex){
             $err_msg = $ex->getMessage();
+            header("Location: error.php");
+            exit();
         }
         if($db){
             $sql = "SELECT * FROM `flight`";
             $sth = $db->prepare($sql);
             $result = $sth->execute();
-            if($result){
-                #echo "<br>Execute success!</br>";
-                #if($sth->fetchObject()){ print "Y"; }
-                #else{ print "N"; }
-                echo "<table width=800 border=2 cellspacing=2 >\n";
-                echo "<td>#</td>";
-                echo "<td>Flight Number</td>";
-                echo "<td>Departure</td>";
-                echo "<td>Destination</td>";
-                echo "<td>Departure Date</td>";
-                echo "<td>Arrival Date</td>\n";
-                #print "<br>".$sth->fetchObject()->id."</br>";
-                while ($data = $sth->fetchObject()){
-                    echo "<tr>";
-                    echo "<td>".$data->id."</td>";
-                    #echo "<td>".$data->account."</td>";
-                    echo "<td>".$data->flight_number."</td>";
-                    echo "<td>".$data->departure."</td>";
-                    echo "<td>".$data->destination."</td>";
-                    echo "<td>".$data->departure_date."</td>";
-                    echo "<td>".$data->arrival_date."</td>";
-                    echo "</tr>\n";
-                }
-                echo "</table>"."\n";
-                if($_SESSION['is_admin']){
-#                    if($_SESSION['insert']){
-                        echo '<br><h3>新增一筆資料</h3></br>';
-                        echo '<form action="insert.php" method="POST">';
-                        echo '<br>Flight Number : <input type="text" name="flight_number"></br>';
-                        echo '<br>Departure : <input type="text" name="departure"></br>';
-                        echo '<br>Destination : <input type="text" name="destination"></br>';
-                        echo '<br>Departure Date : <input type="text" name="departure_date"></br>';
-                        echo '<br>Arrival Date : <input type="text" name="arrival_date"></br>';
-                        echo '<br><button type="submit">Submit</button></br>';
-                        echo '</form>';
-#                        unset($_SESSION['insert']);
-#                    }
-#                    else{
-#                        echo '<br><botton type="submit" action="main.php">New</botton></br>';
-#                        $_SESSION['insert'] = 1;
-#                    }
-                }
-                echo "</body>"."\n";
-                echo "</html>"."\n";
-            }else{
-                #echo "<br>Execute fail!</br>";
-                print_r( $sth->errorInfo());
-                #header("Location: error.php");
+            echo <<<__HTML__
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Welcome to flight schedule system!</title>
+</head>
+<body>
+    <h5><a href="logout.php">logout</a></h5>
+    <h1>Main page</h1>
+    <table width=1000 border=2 cellspacing=2 >
+        <tr>
+        <td>#</td>
+        <td>Flight Number</td>
+        <td>Departure</td>
+        <td>Destination</td>
+        <td>Departure Date</td>
+        <td>Arrival Date</td>
+        <td>Edit / Delete</td>
+        </tr>
+__HTML__;
+            echo "\n";
+            while ($data = $sth->fetchObject()){
+                echo "<tr>";
+                echo "<td>".$data->id."</td>"."";
+                echo "<td>".$data->flight_number."</td>";
+                echo "<td>".$data->departure."</td>";
+                echo "<td>".$data->destination."</td>";
+                echo "<td>".$data->departure_date."</td>";
+                echo "<td>".$data->arrival_date."</td>";
+
+                echo "<td>";
+                echo '<form action="edit.php" method="post">';
+                echo '<button type="submit" name="Edit" value="'.$data->id.'"> Edit </button>';
+                echo '</form>';
+                echo '<form action="delete.php" method="post">';
+                echo '<button type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
+                echo '</form>';
+                echo "</td>";
+                echo "</tr>"."\n";
             }
+            echo "</table>";
+            # Insert form
+            if($_POST['insert']){
+                echo <<<__HTML__
+    <form action="insert.php" method="POST">
+        <table width=1000 border=2 cellspacing=2>
+            <br><h3>新增一筆資料</h3></br>
+            <tr>
+            <td>Flight Number</td>
+            <td>Departure</td>
+            <td>Destination</td>
+            <td>Departure Date</td>
+            <td>Arrival Date</td>
+            </tr>
+            <tr>
+                <td><input type="text" name="flight_number"></td>
+                <td><input type="text" name="departure"></td>
+                <td><input type="text" name="destination"></td>
+                <td><input type="text" name="departure_date"></td>
+                <td><input type="text" name="arrival_date"></td>
+            </tr>
+        </table>
+        <br><button type="submit">Submit</button>
+    </form>
+    <form action="main.php">
+        <button type=submit>Cancel</button>
+    </form>
+__HTML__;
+            }
+            else{
+                echo <<<__HTML__
+                <form action="main.php" method="POST">
+                <br><button type="submit" name="insert" value="true">New</button></br>
+                </form>
+__HTML__;
+            }
+            echo <<<__HTML__
+</body>
+</html>
+__HTML__;
+        } # End of if($db)
 
-        }else{
-            echo "<br>open DB fail!</br>";
-            #header("Location: error.php");
+    } # End of Admin-if
+
+
+    # For Normal User
+    else{
+        try{
+            $dsn = "mysql:host=$db_host;dbname=$db_name";
+            $db = new PDO($dsn,$db_user,$db_password);
+        }catch (PDOException $ex){
+            $err_msg = $ex->getMessage();
+            header("Location: error.php");
+            exit();
         }
-    }
-?>
-
-<?php
-
-function show_main_page2()
-{
-    echo <<<MAIN_HTML
+        if($db){
+            $sql = "SELECT * FROM `flight`";
+            $sth = $db->prepare($sql);
+            $result = $sth->execute();
+            echo <<<__HTML__
 <!doctype html>
 <html lang="en">
 <head>
@@ -102,14 +133,32 @@ function show_main_page2()
     <h5><a href="logout.php">logout</a></h5>
     <h1>Main page</h1>
     <table width=800 border=2 cellspacing=2 >
-        <td>#</td><td>Flight Number</td><td>Departure</td><td>Destination</td><td>Departure Date</td><td>Arrival Date</td>
-        <tr><td>#</td><td>FlightNum</td><td>Departure</td><td>Destination</td><td>Departure Date</td><td>Arrival Date</td></tr>
-    </table>
-        <?php echo "haha"; ?>
+        <td>#</td>
+        <td>Flight Number</td>
+        <td>Departure</td>
+        <td>Destination</td>
+        <td>Departure Date</td>
+        <td>Arrival Date</td>
+__HTML__;
+            while ($data = $sth->fetchObject()){
+                echo "<tr>";
+                echo "<td>".$data->id."</td>";
+                echo "<td>".$data->flight_number."</td>";
+                echo "<td>".$data->departure."</td>";
+                echo "<td>".$data->destination."</td>";
+                echo "<td>".$data->departure_date."</td>";
+                echo "<td>".$data->arrival_date."</td>";
+                echo "</tr>";
+            }
+            echo <<<__HTML__
 </body>
 </html>
+__HTML__;
+        } # End of if($db)
 
-
-MAIN_HTML;
+    } # End of Normal User
 }
+
+
+
 ?>

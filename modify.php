@@ -2,9 +2,13 @@
     session_save_path('./sessions');
     session_start();
     include_once('config.php');
-    #print count($_POST);
     if(count($_POST)==0){//POST ???
         #print '$_POST == 0';
+        header("Location: main.php");
+        exit();
+    }
+    else if($_POST['modify']!=1){
+        #print 'modify != 1';
         header("Location: main.php");
         exit();
     }
@@ -21,12 +25,12 @@
             $err_msg = $ex->getMessage();
         }
         if($db){
-            $sql = "INSERT INTO `flight` "
-                 . "(flight_number,departure,destination,departure_date,arrival_date)"
-                 . " VALUES(?, ?, ?, ?, ?)";
+            $sql = "UPDATE `flight` "
+                 . "SET `flight_number` = ? , `departure` = ? , `destination` = ? , `departure_date` = ? , `arrival_date` = ? "
+                 . "WHERE `flight`.`id` = ?";
             $sth = $db->prepare($sql);
             $result = $sth->execute(
-                array($flight_number,$departure,$destination,$departure_date,$arrival_date)
+                array($flight_number,$departure,$destination,$departure_date,$arrival_date,$_POST['id'])
                 );
             
             if($result){
@@ -43,4 +47,5 @@
             }
         }
     }
+
 ?>
