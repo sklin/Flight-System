@@ -1,7 +1,12 @@
 <?php
     session_save_path('./sessions');
     session_start();
-?>
+    if($_SESSION['account']){
+        header("Location: main.php");
+        exit();
+    }
+    else{
+        echo <<<__HTML__
 <html>
     <head>
         <meta charset="utf-8">
@@ -10,7 +15,10 @@
 
     <body>
         <h1>Welcome to flight schedule system!</h1>
-        <h2>Login to use the flight schedule system!</h2><?= $_SESSION['Error'] ?>
+        <h2>Login to use the flight schedule system!</h2>
+__HTML__;
+        echo $_SESSION['Error'];
+        echo <<<__HTML__
         <form action="verify.php" method="POST">
             <br>Account : <input type="text" name="account"></br>
             <br>Password : <input type="password" name="password"></br>
@@ -19,7 +27,7 @@
         </form>
     </body>
 </html>
-<?php
-    unset($_SESSION['Error']);
-    #$_SESSION['Error']="";
+__HTML__;
+        unset($_SESSION['Error']);
+    }
 ?>
