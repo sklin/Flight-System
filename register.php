@@ -17,10 +17,20 @@
         header("Location: signup.php");
         exit();
     }
+    if(strpos($account," ")){
+        $_SESSION['Error'] = "帳號不可含有空白!";
+        header("Location: signup.php");
+        exit();
+    }
     if(!$password)
     {
         #print("<br>No key password!</br>");
         $_SESSION['Error'] = "密碼不可空白!";
+        header("Location: signup.php");
+        exit();
+    }
+    if(strpos($_POST['password']," ")){
+        $_SESSION['Error'] = "密碼不可含有空白!";
         header("Location: signup.php");
         exit();
     }

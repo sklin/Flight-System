@@ -3,7 +3,8 @@
     session_start();
     include_once('config.php');
     #print count($_POST);
-    if(count($_POST)==0){//POST ???
+    #if(count($_POST)==0){//POST ???
+    if($_POST['insert']!=1){//POST ???
         #print '$_POST == 0';
         header("Location: main.php");
         exit();

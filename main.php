@@ -28,11 +28,29 @@ else{
 <head>
     <meta charset="utf-8">
     <title>Welcome to flight schedule system!</title>
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <style type=text/css>
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+            padding-left: 50px;
+            padding-right: 50px;
+            }
+        .MainTable {
+            font-size: 16px;
+        }
+        span {
+            display:inline;
+        }
+        
+    </style>
 </head>
 <body>
     <h5><a href="logout.php">logout</a></h5>
     <h1>Main page</h1>
-    <table width=1000 border=2 cellspacing=2 >
+    <table class="MainTable table-bordered table table-hover table-condensed" width=1000 border=2 cellspacing=2 >
         <tr>
         <td>#</td>
         <td>Flight Number</td>
@@ -55,10 +73,10 @@ __HTML__;
 
                 echo "<td>";
                 echo '<form action="edit.php" method="post">';
-                echo '<button type="submit" name="Edit" value="'.$data->id.'"> Edit </button>';
+                echo '<button class="btn btn-info" type="submit" name="Edit" value="'.$data->id.'"> Edit </button>';
                 echo '</form>';
                 echo '<form action="delete.php" method="post">';
-                echo '<button type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
+                echo '<button class="btn btn-danger" type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
                 echo '</form>';
                 echo "</td>";
                 echo "</tr>"."\n";
@@ -68,7 +86,7 @@ __HTML__;
             if($_POST['insert']){
                 echo <<<__HTML__
     <form action="insert.php" method="POST">
-        <table width=1000 border=2 cellspacing=2>
+        <table class="table-bordered table" width=1000 border=2 cellspacing=2>
             <br><h3>新增一筆資料</h3></br>
             <tr>
             <td>Flight Number</td>
@@ -85,17 +103,15 @@ __HTML__;
                 <td><input type="text" name="arrival_date"></td>
             </tr>
         </table>
-        <br><button type="submit">Submit</button>
-    </form>
-    <form action="main.php">
-        <button type=submit>Cancel</button>
+        <br><button class="btn btn-success" name="insert" value=1  type="submit">Submit</button>
+            <button class="btn btn-success" name="insert" value=0 type=submit>Cancel</button>
     </form>
 __HTML__;
             }
             else{
                 echo <<<__HTML__
                 <form action="main.php" method="POST">
-                <br><button type="submit" name="insert" value="true">New</button></br>
+                <br><button class="btn btn-success" type="submit" name="insert" value="true">New</button></br>
                 </form>
 __HTML__;
             }
@@ -128,6 +144,9 @@ __HTML__;
 <head>
     <meta charset="utf-8">
     <title>Welcome to flight schedule system!</title>
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
     <h5><a href="logout.php">logout</a></h5>

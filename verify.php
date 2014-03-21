@@ -6,17 +6,25 @@
     $account = $_POST['account'];
     $password = $_POST['password'];
 
-    if(!$account)
-    {
+    if(!$account){
         #print("<br>Please type in your account</br>");
         $_SESSION['Error'] = "帳號不可空白!";
         header("Location: login.php");
         exit();
     }
-    if(!$password)
-    {
+    if(strpos($account," ")){
+        $_SESSION['Error'] = "帳號不可含有空白!";
+        header("Location: login.php");
+        exit();
+    }
+    if(!$password){
         #print("<br>No password</br>");
         $_SESSION['Error'] = "密碼不可空白!";
+        header("Location: login.php");
+        exit();
+    }
+    if(strpos($password," ")){
+        $_SESSION['Error'] = "密碼不可含有空白!";
         header("Location: login.php");
         exit();
     }

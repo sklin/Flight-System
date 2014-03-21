@@ -3,6 +3,7 @@
     session_start();
     include_once('config.php');
     if(count($_POST)==0){//POST ???
+    #if(count($_POST)==0 && !$_SESSION['Edit_Error']){//POST ???
         #print '$_POST == 0';
         header("Location: main.php");
         exit();
@@ -28,6 +29,10 @@
 </head>
 <body>
     <h1>Edit</h1>
+__HTML__;
+#            echo $_SESSION['Edit_Error'].'</br>';
+#            unset($_SESSION['Edit_Error']);
+            echo <<<__HTML__
   <form action="modify.php" method="POST">
     <table width=1000 border=2 cellspacing=2 >
         <tr>
@@ -41,12 +46,12 @@
 __HTML__;
             $data = $sth->fetchObject();
             echo '<tr>';
-            echo '<td>'.$data->id.'</td>'.'';
-            echo '<td>'.$data->flight_number.'</br><input type="text" name="flight_number"></td>';
-            echo '<td>'.$data->departure.'</br><input type="text" name="departure"></td>';
-            echo '<td>'.$data->destination.'</br><input type="text" name="destination"></td>';
-            echo '<td>'.$data->departure_date.'</br><input type="text" name="departure_date"></td>';
-            echo '<td>'.$data->arrival_date.'</br><input type="text" name="arrival_date"></td>';
+            echo '<td>'.$data->id.'</td>';
+            echo '<td><input type="text" name="flight_number" value='.$data->flight_number.'></td>';
+            echo '<td><input type="text" name="departure" value='.$data->departure.'></td>';
+            echo '<td><input type="text" name="destination" value='.$data->destination.'></td>';
+            echo '<td><input type="text" name="departure_date" value='.$data->departure_date.'></td>';
+            echo '<td><input type="text" name="arrival_date" value='.$data->arrival_date.'></td>';
             echo '</table>';
             echo '<input type="hidden" name="id" value='.$_POST['Edit'].'>';
             echo <<<__HTML__
@@ -54,7 +59,6 @@ __HTML__;
     <br><button type="submit" name="modify" value=0>Cancel</button>
   </form>
 __HTML__;
-
 
             echo <<<__HTML__
 </body>
