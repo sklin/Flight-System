@@ -50,8 +50,8 @@ __HTML__;
             echo '<td><input type="text" name="flight_number" value='.$data->flight_number.'></td>';
             echo '<td><input type="text" name="departure" value='.$data->departure.'></td>';
             echo '<td><input type="text" name="destination" value='.$data->destination.'></td>';
-            echo '<td><input type="text" name="departure_date" value='.$data->departure_date.'></td>';
-            echo '<td><input type="text" name="arrival_date" value='.$data->arrival_date.'></td>';
+            echo '<td><input type="datetime-local" name="departure_date" value='.$data->departure_date.'></td>';
+            echo '<td><input type="datetime-local" name="arrival_date" value='.$data->arrival_date.'></td>';
             echo '</table>';
             echo '<input type="hidden" name="id" value='.$_POST['Edit'].'>';
             echo <<<__HTML__

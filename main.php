@@ -39,7 +39,16 @@ else{
             padding-right: 50px;
             }
         .MainTable {
-            font-size: 16px;
+            font-size: 18px;
+        }
+        .Logout{
+            font-size: 20px;
+            position: absolute;
+            left: 90%;
+            padding-right: 50px;
+        }
+        .Error{
+            font-size: 20px;
         }
         span {
             display:inline;
@@ -48,8 +57,15 @@ else{
     </style>
 </head>
 <body>
-    <h5><a href="logout.php">logout</a></h5>
-    <h1>Main page</h1>
+    <h5 class="Logout"><a href="logout.php">logout</a></h5>
+    <h1>Flight System</h1>
+__HTML__;
+            if($_SESSION['Edit_Error']){
+                echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Edit_Error'].'</font></strong>';
+                unset($_SESSION['Edit_Error']);
+
+            }
+            echo <<<__HTML__
     <table class="MainTable table-bordered table table-hover table-condensed" width=1000 border=2 cellspacing=2 >
         <tr>
         <td>#</td>
@@ -83,6 +99,11 @@ __HTML__;
             }
             echo "</table>";
             # Insert form
+            if($_SESSION['Insert_Error']){
+                echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Insert_Error'].'</font></strong>';
+                unset($_SESSION['Insert_Error']);
+
+            }
             if($_POST['insert']){
                 echo <<<__HTML__
     <form action="insert.php" method="POST">
@@ -99,8 +120,8 @@ __HTML__;
                 <td><input type="text" name="flight_number"></td>
                 <td><input type="text" name="departure"></td>
                 <td><input type="text" name="destination"></td>
-                <td><input type="text" name="departure_date"></td>
-                <td><input type="text" name="arrival_date"></td>
+                <td><input type="datetime-local" name="departure_date"></td>
+                <td><input type="datetime-local" name="arrival_date"></td>
             </tr>
         </table>
         <br><button class="btn btn-success" name="insert" value=1  type="submit">Submit</button>
@@ -147,11 +168,32 @@ __HTML__;
     <!-- Bootstrap -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="bootstrap/js/bootstrap.min.js"></script>
+    <style type=text/css>
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+            padding-left: 50px;
+            padding-right: 50px;
+            }
+        .MainTable {
+            font-size: 18px;
+        }
+        .Logout{
+            font-size: 20px;
+            position: absolute;
+            left: 90%;
+            padding-right: 50px;
+        }
+        span {
+            display:inline;
+        }
+        
+    </style>
 </head>
 <body>
-    <h5><a href="logout.php">logout</a></h5>
-    <h1>Main page</h1>
-    <table width=800 border=2 cellspacing=2 >
+    <h5 class="Logout"><a href="logout.php">logout</a></h5>
+    <h1>Flight System</h1>
+    <table class="MainTable table-bordered table table-hover table-condensed" width=800 border=2 cellspacing=2 >
         <td>#</td>
         <td>Flight Number</td>
         <td>Departure</td>

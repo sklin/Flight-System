@@ -15,6 +15,21 @@
         $destination = $_POST['destination'];
         $departure_date = $_POST['departure_date'];
         $arrival_date = $_POST['arrival_date'];
+        if(strpos($flight_number," ")){
+            $_SESSION['Insert_Error'] = "Flight Number 不可含有空白";
+            header("Location: main.php");
+            exit();
+        }
+        else if(strpos($departure," ")){
+            $_SESSION['Insert_Error'] = "Departure 不可含有空白";
+            header("Location: main.php");
+            exit();
+        }
+        else if(strpos($destination," ")){
+            $_SESSION['Insert_Error'] = "Destination 不可含有空白";
+            header("Location: main.php");
+            exit();
+        }
         try{
             $dsn = "mysql:host=$db_host;dbname=$db_name";
             $db = new PDO($dsn,$db_user,$db_password);
