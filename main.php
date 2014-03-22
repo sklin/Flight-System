@@ -53,6 +53,9 @@ else{
         span {
             display:inline;
         }
+        .WideTd{
+            width: 80px;
+        }
         
     </style>
 </head>
@@ -74,7 +77,8 @@ __HTML__;
         <td>Destination</td>
         <td>Departure Date</td>
         <td>Arrival Date</td>
-        <td>Edit / Delete</td>
+        <td class="WideTd">Edit</td>
+        <td class="WideTd">Delete</td>
         </tr>
 __HTML__;
             echo "\n";
@@ -91,6 +95,8 @@ __HTML__;
                 echo '<form action="edit.php" method="post">';
                 echo '<button class="btn btn-info" type="submit" name="Edit" value="'.$data->id.'"> Edit </button>';
                 echo '</form>';
+                echo '</td>';
+                echo '<td>';
                 echo '<form action="delete.php" method="post">';
                 echo '<button class="btn btn-danger" type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
                 echo '</form>';

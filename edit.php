@@ -26,6 +26,33 @@
 <head>
     <meta charset="utf-8">
     <title>Edit</title>
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <style type=text/css>
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+            padding-left: 50px;
+            padding-right: 50px;
+            }
+        .MainTable {
+            font-size: 18px;
+        }
+        .Logout{
+            font-size: 20px;
+            position: absolute;
+            left: 90%;
+            padding-right: 50px;
+        }
+        .Error{
+            font-size: 20px;
+        }
+        span {
+            display:inline;
+        }
+        
+    </style>
 </head>
 <body>
     <h1>Edit</h1>
@@ -34,7 +61,7 @@ __HTML__;
 #            unset($_SESSION['Edit_Error']);
             echo <<<__HTML__
   <form action="modify.php" method="POST">
-    <table width=1000 border=2 cellspacing=2 >
+    <table class="MainTable table-bordered table table-hover table-condensed" width=1000 border=2 cellspacing=2 >
         <tr>
         <td>#</td>
         <td>Flight Number</td>
@@ -55,8 +82,8 @@ __HTML__;
             echo '</table>';
             echo '<input type="hidden" name="id" value='.$_POST['Edit'].'>';
             echo <<<__HTML__
-    <br><button type="submit" name="modify" value=1>Confirm</button>
-    <br><button type="submit" name="modify" value=0>Cancel</button>
+    <br><button class="btn btn-success" type="submit" name="modify" value=1>Confirm</button>
+    <button class="btn btn-success" type="submit" name="modify" value=0>Cancel</button>
   </form>
 __HTML__;
 
