@@ -50,7 +50,8 @@
     <body>
         <h1>Register a new account!</h1>
 __HTML__;
-        echo $_SESSION['Error'];
+        echo '<strong><font color="#FF0000">'.$_SESSION['Error'].'</font></strong>';
+        unset($_SESSION['Error']);
         echo <<<__HTML__
         <div class="Login-Block">
         <form class="form-signin" action="register.php" method="POST">

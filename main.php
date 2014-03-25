@@ -19,7 +19,7 @@ else{
             exit();
         }
         if($db){
-            $sql = "SELECT * FROM `flight`";
+            $sql = "SELECT * FROM `flight` ORDER BY id";
             $sth = $db->prepare($sql);
             $result = $sth->execute();
             echo <<<__HTML__
@@ -69,7 +69,7 @@ __HTML__;
 
             }
             echo <<<__HTML__
-    <table class="MainTable table-bordered table table-hover table-condensed" width=1000 border=2 cellspacing=2 >
+    <table class="MainTable table table-hover table-condensed" width=1000 cellspacing=2 >
         <tr>
         <td>#</td>
         <td>Flight Number</td>
@@ -199,7 +199,7 @@ __HTML__;
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
     <h1>Flight System</h1>
-    <table class="MainTable table-bordered table table-hover table-condensed" width=800 border=2 cellspacing=2 >
+    <table class="MainTable table table-hover table-condensed" width=800 cellspacing=2 >
         <td>#</td>
         <td>Flight Number</td>
         <td>Departure</td>

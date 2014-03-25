@@ -15,18 +15,28 @@
         $destination = $_POST['destination'];
         $departure_date = $_POST['departure_date'];
         $arrival_date = $_POST['arrival_date'];
-        if(strpos($flight_number," ")){
-            $_SESSION['Insert_Error'] = "Flight Number 不可含有空白";
+        if(str_replace(" ","",$flight_number)===""){
+            $_SESSION['Insert_Error'] = "Flight Number cannot be empty!";
             header("Location: main.php");
             exit();
         }
-        else if(strpos($departure," ")){
-            $_SESSION['Insert_Error'] = "Departure 不可含有空白";
+        else if(str_replace(" ","",$departure)===""){
+            $_SESSION['Insert_Error'] = "Departure cannot be empty!";
             header("Location: main.php");
             exit();
         }
-        else if(strpos($destination," ")){
-            $_SESSION['Insert_Error'] = "Destination 不可含有空白";
+        else if(str_replace(" ","",$destination)===""){
+            $_SESSION['Insert_Error'] = "Destination cannot be empty!";
+            header("Location: main.php");
+            exit();
+        }
+        else if(str_replace(" ","",$departure_date)===""){
+            $_SESSION['Insert_Error'] = "Departure Date cannot be empty!";
+            header("Location: main.php");
+            exit();
+        }
+        else if(str_replace(" ","",$arrival_date)===""){
+            $_SESSION['Insert_Error'] = "Arrival Date cannot be empty!";
             header("Location: main.php");
             exit();
         }
