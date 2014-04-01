@@ -7,8 +7,7 @@
         header("Location: main.php");
         exit();
     }
-    else{
-        echo <<<__HTML__
+?>
 <!doctype html>
 <html lang="en">
     <head>
@@ -49,10 +48,7 @@
 
     <body>
         <h1>Register a new account!</h1>
-__HTML__;
-        echo '<strong><font color="#FF0000">'.$_SESSION['Error'].'</font></strong>';
-        unset($_SESSION['Error']);
-        echo <<<__HTML__
+        <strong><font color="#FF0000"><?php echo $_SESSION['Error']; ?></font></strong>
         <div class="Login-Block">
         <form class="form-signin" action="register.php" method="POST">
             <h4>Account : <input type="text" name="account"></h4>
@@ -64,7 +60,6 @@ __HTML__;
         </div>
     </body>
 </html>
-__HTML__;
-    }
+<?php
+    unset($_SESSION['Error']);
 ?>
-

@@ -6,8 +6,7 @@
         header("Location: main.php");
         exit();
     }
-    else{
-        echo <<<__HTML__
+?>
 <!doctype html>
 <html>
     <head>
@@ -49,9 +48,7 @@
     <body>
         <h1 class="title">Welcome to Flight Schedule System!</h1>
         <div class="Login-Block">
-__HTML__;
-        echo '<strong><font color="#FF0000">'.$_SESSION['Error'].'</font></strong>';
-        echo <<<__HTML__
+        <strong><font color="#FF0000"><?php echo $_SESSION['Error']; ?></font></strong>
         <form class="form-signin" action="verify.php" method="POST">
             <h4>Account : <input type="text" class="form-inline" name="account"></h4>
             <h4>Password : <input type="password" class="form-inline" name="password"></h4>
@@ -61,7 +58,7 @@ __HTML__;
         </div>
     </body>
 </html>
-__HTML__;
-        unset($_SESSION['Error']);
-    }
+<?php
+    unset($_SESSION['Error']);
 ?>
+
