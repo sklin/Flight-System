@@ -42,7 +42,7 @@
     {
 #        $sql = "SELECT account, password FROM `user`"
 #             . " WHERE `account` = ? AND `password` = ?";
-        $sql = "SELECT account, password, is_admin FROM `user`"
+        $sql = "SELECT id, account, password, is_admin FROM `user`"
              . " WHERE `account` = ?";
 #             . " WHERE `account` = ? AND `password` = ?";
         $sth = $db->prepare($sql);
@@ -56,6 +56,7 @@
 #            $hash = $temp->password
             if(password_verify($password,$temp->password))
             {
+                $_SESSION['account_ID'] = $temp->id;
                 $_SESSION['account'] = $_POST['account'];
                 $_SESSION['is_admin'] = $temp->is_admin;
                 header("Location: main.php");

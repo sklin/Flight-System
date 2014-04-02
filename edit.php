@@ -81,8 +81,8 @@
             <td><input type="text" name="flight_number" value=<?php echo $data->flight_number; ?>></td>
             <td><input type="text" name="departure" value=<?php echo $data->departure; ?>></td>
             <td><input type="text" name="destination" value=<?php echo $data->destination; ?>></td>
-            <td><input type="datetime-local" name="departure_date" value=<?php echo $data->departure_date; ?>></td>
-            <td><input type="datetime-local" name="arrival_date" value=<?php echo $data->arrival_date; ?>></td>
+            <td><input type="datetime-local" name="departure_date" value=<?php echo $data->departure_date; ?> checked></td>
+            <td><input type="datetime-local" name="arrival_date" value=<?php echo $data->arrival_date; ?> checked></td>
             <td><input type="text" name="ticket_price" value=<?php echo $data->ticket_price; ?>></td>
         </table>
         <input type="hidden" name="id" value=<?php echo $_POST['Edit']; ?>>

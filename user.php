@@ -10,6 +10,8 @@ include_once('config.php');
         header("Location: main.php");
         exit();
     }
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
     accessDB($db);
     if($db){
         $sql = "SELECT * FROM `flight` ORDER BY id";
@@ -50,7 +52,27 @@ include_once('config.php');
 </head>
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
+    <br><h5 class="Logout"><a href="favorate.php">Favorate</a></h5>
     <h1>Flight System</h1>
+    <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
+    <?php echo $_POST['order']; ?>
+    <?php echo $_POST['order_method']; ?>
+    <form method="POST" action="user.php">
+    <select name="order">
+        <option value="id">ID</option>
+        <option value="flight_number">Flight number</option>
+        <option value="departure">Departure</option>
+        <option value="destination">Destination</option>
+        <option value="departure_date">Departure Date</option>
+        <option value="arrival_date">Arrival Date</option>
+        <option value="ticket_price">Ticket Price</option>
+    </select>
+    <select name="order_method">
+        <option value="ASC" selected>ASC</option>
+        <option value="DESC">DESC</option>
+    </select>
+    <button type="submit">Sort</button></br>
+    </form>
     <table class="MainTable table table-hover table-condensed" width=800 cellspacing=2 >
         <td>#</td>
         <td>Flight Number</td>
@@ -58,6 +80,22 @@ include_once('config.php');
         <td>Destination</td>
         <td>Departure Date</td>
         <td>Arrival Date</td>
+        <td>Ticket Price</td>
+        <td class="WideTd">Favorate</td>
+<?php
+    if($_POST['order']!=""){
+        $order = " ".$_POST['order'];
+    }
+    else{
+        $order = " id";
+    }
+    if($_POST['order_method']!=""){
+        $order_method = " ".$_POST['order_method'];
+    }
+    else{
+        $order_method = " ASC";
+    }
+?>
 <?php
     while ($data = $sth->fetchObject()){
         echo "<tr>";
@@ -67,7 +105,24 @@ include_once('config.php');
         echo "<td>".$data->destination."</td>";
         echo "<td>".$data->departure_date."</td>";
         echo "<td>".$data->arrival_date."</td>";
-        echo "</tr>";
+        echo "<td>".$data->ticket_price."</td>";
+        echo '<td>';
+        $sql2 = "SELECT `id` FROM `favorate` "
+                ."WHERE `account_ID` = ?  AND `flight_ID` = ? ";
+        $sth2 = $db->prepare($sql2);
+        $result2 = $sth2->execute(array($account_ID,$data->id));
+        if($sth2->fetchObject()){
+            echo '<form action="rm_favorate.php" method="post">';
+            echo '<button class="btn btn-success" type="submit" name="rm_favorate" value="'.$data->id.'">Remove</button>';
+            echo '</form>';
+        }
+        else{
+            echo '<form action="add_favorate.php" method="post">';
+            echo '<button class="btn btn-success" type="submit" name="add_favorate" value="'.$data->id.'">Add</button>';
+            echo '</form>';
+        }
+        
+        echo "</tr>"."\n";
     }
 ?>
 </body>

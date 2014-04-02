@@ -10,6 +10,9 @@ include_once('config.php');
         header("Location: user.php");
         exit();
     }
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
+
     accessDB($db);
 ?>
 
@@ -52,7 +55,9 @@ include_once('config.php');
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
     <br><h5 class="Logout"><a href="authority.php">User list</a></h5>
+    <br><h5 class="Logout"><a href="favorate.php">Favorate</a></h5>
     <h1>Flight System</h1>
+    <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
 <?php
             if($_SESSION['Edit_Error']){
                 echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Edit_Error'].'</font></strong>';
@@ -89,6 +94,7 @@ include_once('config.php');
         <td>Ticket Price</td>
         <td class="WideTd">Edit</td>
         <td class="WideTd">Delete</td>
+        <td class="WideTd">Favorate</td>
         </tr>
 <?php
     if($_POST['order']!=""){
@@ -111,7 +117,7 @@ include_once('config.php');
     echo "\n";
     while ($data = $sth->fetchObject()){
         echo "<tr>";
-        echo "<td>".$data->id."</td>"."";
+        echo "<td>".$data->id."</td>";
         echo "<td>".$data->flight_number."</td>";
         echo "<td>".$data->departure."</td>";
         echo "<td>".$data->destination."</td>";
@@ -129,6 +135,23 @@ include_once('config.php');
         echo '<button class="btn btn-danger" type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
         echo '</form>';
         echo "</td>";
+
+        echo '<td>';
+        $sql2 = "SELECT `id` FROM `favorate` "
+                ."WHERE `account_ID` = ?  AND `flight_ID` = ? ";
+        $sth2 = $db->prepare($sql2);
+        $result2 = $sth2->execute(array($account_ID,$data->id));
+        if($sth2->fetchObject()){
+            echo '<form action="rm_favorate.php" method="post">';
+            echo '<button class="btn btn-success" type="submit" name="rm_favorate" value="'.$data->id.'">Remove</button>';
+            echo '</form>';
+        }
+        else{
+            echo '<form action="add_favorate.php" method="post">';
+            echo '<button class="btn btn-success" type="submit" name="add_favorate" value="'.$data->id.'">Add</button>';
+            echo '</form>';
+        }
+        
         echo "</tr>"."\n";
     }
     echo "</table>";
