@@ -2,6 +2,14 @@
     session_save_path('./sessions');
     session_start();
     include_once('config.php');
+    if(!$_SESSION['account']){
+        header("Location: main.php");
+        exit();
+    }
+    if(!$_SESSION['is_admin']){
+        header("Location: main.php");
+        exit();
+    }
     if(count($_POST)==0){//POST ???
         #print '$_POST == 0';
         header("Location: main.php");

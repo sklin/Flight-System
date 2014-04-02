@@ -11,11 +11,6 @@ include_once('config.php');
         exit();
     }
     accessDB($db);
-    if($db){
-        $sql = "SELECT * FROM `flight` ORDER BY id";
-        $sth = $db->prepare($sql);
-        $result = $sth->execute();
-    }
 ?>
 
 <!doctype html>
@@ -56,6 +51,7 @@ include_once('config.php');
 </head>
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
+    <br><h5 class="Logout"><a href="authority.php">User list</a></h5>
     <h1>Flight System</h1>
 <?php
             if($_SESSION['Edit_Error']){
@@ -64,6 +60,24 @@ include_once('config.php');
 
             }
 ?>
+    <?php echo $_POST['order']; ?>
+    <?php echo $_POST['order_method']; ?>
+    <form method="POST" action="main.php">
+    <select name="order">
+        <option value="id">ID</option>
+        <option value="flight_number">Flight number</option>
+        <option value="departure">Departure</option>
+        <option value="destination">Destination</option>
+        <option value="departure_date">Departure Date</option>
+        <option value="arrival_date">Arrival Date</option>
+        <option value="ticket_price">Ticket Price</option>
+    </select>
+    <select name="order_method">
+        <option value="ASC" selected>ASC</option>
+        <option value="DESC">DESC</option>
+    </select>
+    <button type="submit">Sort</button></br>
+    </form>
     <table class="MainTable table table-hover table-condensed" width=1000 cellspacing=2 >
         <tr>
         <td>#</td>
@@ -72,10 +86,28 @@ include_once('config.php');
         <td>Destination</td>
         <td>Departure Date</td>
         <td>Arrival Date</td>
+        <td>Ticket Price</td>
         <td class="WideTd">Edit</td>
         <td class="WideTd">Delete</td>
         </tr>
 <?php
+    if($_POST['order']!=""){
+        $order = " ".$_POST['order'];
+    }
+    else{
+        $order = " id";
+    }
+    if($_POST['order_method']!=""){
+        $order_method = " ".$_POST['order_method'];
+    }
+    else{
+        $order_method = " ASC";
+    }
+    if($db){
+        $sql = "SELECT * FROM `flight` ORDER BY " . $order . $order_method;
+        $sth = $db->prepare($sql);
+        $result = $sth->execute();
+    }
     echo "\n";
     while ($data = $sth->fetchObject()){
         echo "<tr>";
@@ -85,6 +117,7 @@ include_once('config.php');
         echo "<td>".$data->destination."</td>";
         echo "<td>".$data->departure_date."</td>";
         echo "<td>".$data->arrival_date."</td>";
+        echo "<td>".$data->ticket_price."</td>";
 
         echo "<td>";
         echo '<form action="edit.php" method="post">';
@@ -116,6 +149,7 @@ include_once('config.php');
                 <td>Destination</td>
                 <td>Departure Date</td>
                 <td>Arrival Date</td>
+                <td>Ticket price</td>
             </tr>
             <tr>
                 <td><input type="text" name="flight_number"></td>
@@ -123,6 +157,7 @@ include_once('config.php');
                 <td><input type="text" name="destination"></td>
                 <td><input type="datetime-local" name="departure_date"></td>
                 <td><input type="datetime-local" name="arrival_date"></td>
+                <td><input type="text" name="ticket_price"></td>
             </tr>
         </table>
         <br><button class="btn btn-success" name="insert" value=1  type="submit">Submit</button>

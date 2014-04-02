@@ -73,6 +73,7 @@
             <td>Destination</td>
             <td>Departure Date</td>
             <td>Arrival Date</td>
+            <td>Ticket Price</td>
             </tr>
             
             <tr>
@@ -82,6 +83,7 @@
             <td><input type="text" name="destination" value=<?php echo $data->destination; ?>></td>
             <td><input type="datetime-local" name="departure_date" value=<?php echo $data->departure_date; ?>></td>
             <td><input type="datetime-local" name="arrival_date" value=<?php echo $data->arrival_date; ?>></td>
+            <td><input type="text" name="ticket_price" value=<?php echo $data->ticket_price; ?>></td>
         </table>
         <input type="hidden" name="id" value=<?php echo $_POST['Edit']; ?>>
         <br><button class="btn btn-success" type="submit" name="modify" value=1>Confirm</button>

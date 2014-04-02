@@ -6,13 +6,8 @@
     $password = password_hash($_POST['password']);
     $is_admin = $_POST['is_admin'];
     
-    if(!$account)
+    if(str_replace(" ","",$account)==="")
     {
-        #print("<br>No key account!</br>");
-        #echo '<form action="signup.php" method="POST">';
-        #echo '<input type="hidden" name="account_exist" value="No account">';
-        #echo '<input type="submit" method="post" onclick="autoSubmit()" >';
-        #echo '</form>';
         $_SESSION['Error'] = "帳號不可空白!";
         header("Location: signup.php");
         exit();
@@ -22,18 +17,19 @@
         header("Location: signup.php");
         exit();
     }
-    if(!$password)
+    if($_POST['password']==="")
     {
         #print("<br>No key password!</br>");
         $_SESSION['Error'] = "密碼不可空白!";
         header("Location: signup.php");
         exit();
     }
+    /*
     if(strpos($_POST['password']," ")){
         $_SESSION['Error'] = "密碼不可含有空白!";
         header("Location: signup.php");
         exit();
-    }
+    }*/
 
     if($is_admin===null)
     {

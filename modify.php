@@ -2,6 +2,14 @@
     session_save_path('./sessions');
     session_start();
     include_once('config.php');
+    if(!$_SESSION['account']){
+        header("Location: main.php");
+        exit();
+    }
+    if(!$_SESSION['is_admin']){
+        header("Location: main.php");
+        exit();
+    }
     if(count($_POST)==0){//POST ???
         #print '$_POST == 0';
         header("Location: main.php");
@@ -18,6 +26,7 @@
         $destination = $_POST['destination'];
         $departure_date = $_POST['departure_date'];
         $arrival_date = $_POST['arrival_date'];
+        $ticket_price = $_POST['ticket_price'];
         if(str_replace(" ","",$_POST['flight_number'])===""){
             header("Location: main.php");
             $_SESSION['Edit_Error'] = "Flight Number cannot be empty!";
@@ -43,6 +52,11 @@
             $_SESSION['Edit_Error'] = "Arrival Date cannot be empty!";
             exit();
         }
+        if(str_replace(" ","",$_POST['ticket_price'])===""){
+            header("Location: edit.php");
+            $_SESSION['Edit_Error'] = "Ticket price cannot be empty!";
+            exit();
+        }
         try{
             $dsn = "mysql:host=$db_host;dbname=$db_name";
             $db = new PDO($dsn,$db_user,$db_password);
@@ -51,11 +65,11 @@
         }
         if($db){
             $sql = "UPDATE `flight` "
-                 . "SET `flight_number` = ? , `departure` = ? , `destination` = ? , `departure_date` = ? , `arrival_date` = ? "
+                 . "SET `flight_number` = ? , `departure` = ? , `destination` = ? , `departure_date` = ? , `arrival_date` = ? , `ticket_price` = ? "
                  . "WHERE `flight`.`id` = ?";
             $sth = $db->prepare($sql);
             $result = $sth->execute(
-                array($flight_number,$departure,$destination,$departure_date,$arrival_date,$_POST['id'])
+                array($flight_number,$departure,$destination,$departure_date,$arrival_date,$ticket_price,$_POST['id'])
                 );
             
             if($result){
