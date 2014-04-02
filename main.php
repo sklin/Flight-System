@@ -55,7 +55,7 @@ include_once('config.php');
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
     <br><h5 class="Logout"><a href="authority.php">User list</a></h5>
-    <br><h5 class="Logout"><a href="favorate.php">Favorate</a></h5>
+    <br><h5 class="Logout"><a href="compare.php">Comparison sheet</a></h5>
     <h1>Flight System</h1>
     <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
 <?php
@@ -94,7 +94,7 @@ include_once('config.php');
         <td>Ticket Price</td>
         <td class="WideTd">Edit</td>
         <td class="WideTd">Delete</td>
-        <td class="WideTd">Favorate</td>
+        <td class="WideTd">Compare</td>
         </tr>
 <?php
     if($_POST['order']!=""){
@@ -137,18 +137,18 @@ include_once('config.php');
         echo "</td>";
 
         echo '<td>';
-        $sql2 = "SELECT `id` FROM `favorate` "
+        $sql2 = "SELECT `id` FROM `compare` "
                 ."WHERE `account_ID` = ?  AND `flight_ID` = ? ";
         $sth2 = $db->prepare($sql2);
         $result2 = $sth2->execute(array($account_ID,$data->id));
         if($sth2->fetchObject()){
-            echo '<form action="rm_favorate.php" method="post">';
-            echo '<button class="btn btn-success" type="submit" name="rm_favorate" value="'.$data->id.'">Remove</button>';
+            echo '<form action="rm_compare.php" method="post">';
+            echo '<button class="btn btn-success" type="submit" name="rm_compare" value="'.$data->id.'">Remove</button>';
             echo '</form>';
         }
         else{
-            echo '<form action="add_favorate.php" method="post">';
-            echo '<button class="btn btn-success" type="submit" name="add_favorate" value="'.$data->id.'">Add</button>';
+            echo '<form action="add_compare.php" method="post">';
+            echo '<button class="btn btn-success" type="submit" name="add_compare" value="'.$data->id.'">Add</button>';
             echo '</form>';
         }
         
