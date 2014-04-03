@@ -12,6 +12,7 @@ include_once('config.php');
     }
     $account = $_SESSION['account'];
     $account_ID = $_SESSION['account_ID'];
+    $edit_id = $_POST['edit_id']
 ?>
 <!doctype html>
 <html lang="en">
@@ -78,6 +79,13 @@ include_once('config.php');
     </select>
     <button type="submit">Sort</button></br>
     </form>
+<?php
+    if($_SESSION['Edit_Error']){
+        echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Edit_Error'].'</font></strong>';
+        unset($_SESSION['Edit_Error']);
+
+    }
+?>
     <table class="MainTable table table-hover table-condensed" width=1000 cellspacing=2 >
         <tr>
         <td>#</td>
@@ -108,27 +116,73 @@ include_once('config.php');
     }
     echo "\n";
     while ($data = $sth->fetchObject()){
-        echo "<tr>";
-        echo "<td>".$data->id."</td>";
-        echo "<td>".$data->name."</td>";
-        echo "<td>".$data->longitude."</td>";
-        echo "<td>".$data->latitude."</td>";
+        echo "<tr>\n";
+        #echo '<form action="edit_airport.php" method="post">';
+        echo "<td>";
+        echo $data->id;
+        echo "</td>\n";
+        
+        if($edit_id==$data->id){
+            echo '<form action="edit_airport.php" method="post">';
+        }
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<input type="text" name="name" value="'.$data->name.'"></input>';
+        }
+        else{
+            echo $data->name;
+        }
+        echo "</td>\n";
 
         echo "<td>";
-        echo '<form action="edit_airport.php" method="post">';
-        echo '<button class="btn btn-info" type="submit" name="edit" value="'.$data->id.'">Edit</button>';
-        echo '</form>';
-        echo '</td>';
+        if($edit_id==$data->id){
+            echo '<input type="text" name="longitude" value="'.$data->longitude.'"></input>';
+        }
+        else{
+            echo $data->longitude;
+        }
+        echo "</td>\n";
+        
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<input type="text" name="latitude" value="'.$data->latitude.'"></input>';
+        }
+        else{
+            echo $data->latitude;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Comfirm</button>';
+        }
+        else{
+            echo '<form action="airport.php" method="post">';
+            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Edit</button>';
+            echo '</form>';
+        }
+        if($edit_id==$data->id){
+            echo '</form>';
+        }
+        echo "</td>\n";
         
         echo '<td>';
         echo '<form action="rm_airport.php" method="post">';
         echo '<button class="btn btn-danger" type="submit" name="delete" value="'.$data->id.'">Delete</button>';
         echo '</form>';
-        echo "</td>";
+        echo "</td>\n";
         
         echo "</tr>"."\n";
+        #echo '</form>';
     }
     echo "</table>";
+?>
+<?php
+    if($_POST['edit_id']){
+        echo '<a class="btn btn-success" href="airport.php" style="position: absolute;left: 90%;">Cancel</a>';
+    }
+?>
+<?php
     # Insert form
     if($_SESSION['Insert_Error']){
         echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Insert_Error'].'</font></strong>';
