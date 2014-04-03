@@ -64,18 +64,50 @@ include_once('config.php');
 
             }
 ?>
-    <?php echo $_POST['order']; ?>
-    <?php echo $_POST['order_method']; ?>
     <form method="POST" action="airport.php">
     <select name="order">
-        <option value="id">ID</option>
-        <option value="name">Name</option>
-        <option value="longitude">Longitude</option>
-        <option value="latitude">Latitude</option>
+        <?php
+            if($_POST['order']==="id"){
+                echo '<option value="id" selected>ID</option>';
+            }
+            else{
+                echo '<option value="id">ID</option>';
+            }
+            if($_POST['order']==="name"){
+                echo '<option value="name" selected>Name</option>';
+            }
+            else{
+                echo '<option value="name">Name</option>';
+            }
+            if($_POST['order']==="longitude"){
+                echo '<option value="longitude" selected>Longitude</option>';
+            }
+            else{
+                echo '<option value="longitude">Longitude</option>';
+            }
+            if($_POST['order']==="latitude"){
+                echo '<option value="latitude" selected>Latitude</option>';
+            }
+            else{
+                echo '<option value="latitude">Latitude</option>';
+            }
+        ?>
     </select>
     <select name="order_method">
-        <option value="ASC" selected>ASC</option>
-        <option value="DESC">DESC</option>
+        <?php
+            if($_POST['order_method']==="ASC"){
+                echo '<option value="ASC" selected>ASC</option>';
+            }
+            else{
+                echo '<option value="ASC">ASC</option>';
+            }
+            if($_POST['order_method']==="DESC"){
+                echo '<option value="DESC" selected>DESC</option>';
+            }
+            else{
+                echo '<option value="DESC">DESC</option>';
+            }
+        ?>
     </select>
     <button type="submit">Sort</button></br>
     </form>
