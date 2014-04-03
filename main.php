@@ -15,6 +15,14 @@ include_once('config.php');
     $edit_id = $_POST['edit_id'];
     accessDB($db);
 ?>
+<?php
+    if($_POST['order']!=""){
+        $_SESSION['main_order'] = $_POST['order'];
+    }
+    if($_POST['order_method']!=""){
+        $_SESSION['main_order_method'] = $_POST['order_method'];
+    }
+?>
 
 <!doctype html>
 <html lang="en">
@@ -70,17 +78,66 @@ include_once('config.php');
     <?php echo $_POST['edit_id']; ?>
     <form method="POST" action="main.php">
     <select name="order">
-        <option value="id">ID</option>
-        <option value="flight_number">Flight number</option>
-        <option value="departure">Departure</option>
-        <option value="destination">Destination</option>
-        <option value="departure_date">Departure Date</option>
-        <option value="arrival_date">Arrival Date</option>
-        <option value="ticket_price">Ticket Price</option>
+    <?php
+        if($_SESSION['main_order']==="id"){
+            echo '<option value="id" selected>ID</option>';
+        }
+        else{
+            echo '<option value="id">ID</option>';
+        }
+        if($_SESSION['main_order']==="flight_number"){
+            echo '<option value="flight_number" selected>Flight Number</option>';
+        }
+        else{
+            echo '<option value="flight_number">Flight Number</option>';
+        }
+        if($_SESSION['main_order']==="departure"){
+            echo '<option value="departure" selected>Departure</option>';
+        }
+        else{
+            echo '<option value="departure">Departure</option>';
+        }
+        if($_SESSION['main_order']==="destination"){
+            echo '<option value="destination" selected>Destination</option>';
+        }
+        else{
+            echo '<option value="destination">Destination</option>';
+        }
+        if($_SESSION['main_order']==="departure_date"){
+            echo '<option value="departure_date" selected>Departure Date</option>';
+        }
+        else{
+            echo '<option value="departure_date">Departure Date</option>';
+        }
+        if($_SESSION['main_order']==="arrival_date"){
+            echo '<option value="arrival_date" selected>Arrival Date</option>';
+        }
+        else{
+            echo '<option value="arrival_date">Arrival Date</option>';
+        }
+        if($_SESSION['main_order']==="ticket_price"){
+            echo '<option value="ticket_price" selected>Ticket Price</option>';
+        }
+        else{
+            echo '<option value="ticket_price">Ticket Price</option>';
+        }
+    ?>
     </select>
     <select name="order_method">
-        <option value="ASC" selected>ASC</option>
-        <option value="DESC">DESC</option>
+    <?php
+            if($_SESSION['main_order_method']==="ASC"){
+                echo '<option value="ASC" selected>ASC</option>';
+            }
+            else{
+                echo '<option value="ASC">ASC</option>';
+            }
+            if($_SESSION['main_order_method']==="DESC"){
+                echo '<option value="DESC" selected>DESC</option>';
+            }
+            else{
+                echo '<option value="DESC">DESC</option>';
+            }
+    ?>
     </select>
     <button type="submit">Sort</button></br>
     </form>
@@ -98,14 +155,14 @@ include_once('config.php');
         <td class="WideTd">Compare</td>
         </tr>
 <?php
-    if($_POST['order']!=""){
-        $order = " ".$_POST['order'];
+    if($_SESSION['main_order']!=""){
+        $order = " ".$_SESSION['main_order'];
     }
     else{
         $order = " id";
     }
-    if($_POST['order_method']!=""){
-        $order_method = " ".$_POST['order_method'];
+    if($_SESSION['main_order_method']!=""){
+        $order_method = " ".$_SESSION['main_order_method'];
     }
     else{
         $order_method = " ASC";
