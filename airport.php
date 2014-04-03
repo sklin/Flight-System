@@ -136,7 +136,7 @@ include_once('config.php');
 
         echo "<td>";
         if($edit_id==$data->id){
-            echo '<input type="text" name="longitude" value="'.$data->longitude.'"></input>';
+            echo '<input type="number" name="longitude" step=0.01 placeholder="Longitude" value="'.$data->longitude.'"></input>';
         }
         else{
             echo $data->longitude;
@@ -145,7 +145,7 @@ include_once('config.php');
         
         echo "<td>";
         if($edit_id==$data->id){
-            echo '<input type="text" name="latitude" value="'.$data->latitude.'"></input>';
+            echo '<input type="number" name="latitude" step=0.01 placeholder="Latitude" value="'.$data->latitude.'"></input>';
         }
         else{
             echo $data->latitude;
@@ -201,8 +201,8 @@ include_once('config.php');
             </tr>
             <tr>
                 <td><input type="text" name="name"></td>
-                <td><input type="number" name="longitude" step=0.000001 placeholder="Longitude"></input></td>
-                <td><input type="number" name="latitude" step=0.000001 placeholder="Latitude"></input></td>
+                <td><input type="number" name="longitude" step=0.01 placeholder="Longitude"></input></td>
+                <td><input type="number" name="latitude" step=0.01 placeholder="Latitude"></input></td>
             </tr>
         </table>
         <br><button class="btn btn-success" name="insert" value=1  type="submit">Submit</button>
