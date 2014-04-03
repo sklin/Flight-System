@@ -180,7 +180,7 @@ include_once('config.php');
 
         echo "<td>";
         if($edit_id==$data->id){
-            echo '<input type="text" name="departure_date" value="'.$data->departure_date.'"></input>';
+            echo '<input type="datetime-local" name="departure_date" value="'.$data->departure_date.'"></input>';
         }
         else{
             echo $data->departure_date;
@@ -189,7 +189,7 @@ include_once('config.php');
 
         echo "<td>";
         if($edit_id==$data->id){
-            echo '<input type="text" name="arrival_date" value="'.$data->arrival_date.'"></input>';
+            echo '<input type="datetime-local" name="arrival_date" value="'.$data->arrival_date.'"></input>';
         }
         else{
             echo $data->arrival_date;
@@ -295,8 +295,8 @@ __HTML__;
         }
         echo <<<__HTML__
                 </td>
-                <td><input type="datetime-local" name="departure_date"></td>
-                <td><input type="datetime-local" name="arrival_date"></td>
+                <td><input type="datetime-local" name="departure_date"></input></td>
+                <td><input type="datetime-local" name="arrival_date"></input></td>
                 <td><input type="text" name="ticket_price"></td>
                     </select>
             </tr>
