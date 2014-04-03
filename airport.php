@@ -13,6 +13,25 @@ include_once('config.php');
     $account = $_SESSION['account'];
     $account_ID = $_SESSION['account_ID'];
     $edit_id = $_POST['edit_id'];
+
+    if($_POST['order']!=""){
+        $_SESSION['order'] = $_POST['order'];
+    }
+    if($_POST['order_method']!=""){
+        $_SESSION['order_method'] = $_POST['order_method'];
+    }
+    if($_POST['search']!=""){
+        $_SESSION['search'] = $_POST['search'];
+    }
+    if($_POST['keyword']!=""){
+        $_SESSION['keyword'] = $_POST['keyword'];
+    }
+    if($_POST['Clear']==1){
+        unset($_SESSION['keyword']);
+        unset($_SESSION['search']);    
+        $keyword = "";
+        $search = "";
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -67,25 +86,25 @@ include_once('config.php');
     <form method="POST" action="airport.php">
     <select name="order">
         <?php
-            if($_POST['order']==="id"){
+            if($_SESSION['order']==="id"){
                 echo '<option value="id" selected>ID</option>';
             }
             else{
                 echo '<option value="id">ID</option>';
             }
-            if($_POST['order']==="name"){
+            if($_SESSION['order']==="name"){
                 echo '<option value="name" selected>Name</option>';
             }
             else{
                 echo '<option value="name">Name</option>';
             }
-            if($_POST['order']==="longitude"){
+            if($_SESSION['order']==="longitude"){
                 echo '<option value="longitude" selected>Longitude</option>';
             }
             else{
                 echo '<option value="longitude">Longitude</option>';
             }
-            if($_POST['order']==="latitude"){
+            if($_SESSION['order']==="latitude"){
                 echo '<option value="latitude" selected>Latitude</option>';
             }
             else{
@@ -95,13 +114,13 @@ include_once('config.php');
     </select>
     <select name="order_method">
         <?php
-            if($_POST['order_method']==="ASC"){
+            if($_SESSION['order_method']==="ASC"){
                 echo '<option value="ASC" selected>ASC</option>';
             }
             else{
                 echo '<option value="ASC">ASC</option>';
             }
-            if($_POST['order_method']==="DESC"){
+            if($_SESSION['order_method']==="DESC"){
                 echo '<option value="DESC" selected>DESC</option>';
             }
             else{
@@ -111,30 +130,28 @@ include_once('config.php');
     </select>
     <button type="submit">Sort</button></br>
     </form>
-    <?php echo $_POST['search']; ?>
-    <?php echo $_POST['keyword']; ?>
     <form method="POST" action="airport.php">
     <select name="search">
         <?php
-            if($_POST['search']==="id"){
+            if($_SESSION['search']==="id"){
                 echo '<option value="id" selected>ID</option>';
             }
             else{
                 echo '<option value="id">ID</option>';
             }
-            if($_POST['search']==="name"){
+            if($_SESSION['search']==="name"){
                 echo '<option value="name" selected>Name</option>';
             }
             else{
                 echo '<option value="name">Name</option>';
             }
-            if($_POST['search']==="longitude"){
+            if($_SESSION['search']==="longitude"){
                 echo '<option value="longitude" selected>Longitude</option>';
             }
             else{
                 echo '<option value="longitude">Longitude</option>';
             }
-            if($_POST['search']==="latitude"){
+            if($_SESSION['search']==="latitude"){
                 echo '<option value="latitude" selected>Latitude</option>';
             }
             else{
@@ -142,8 +159,9 @@ include_once('config.php');
             }
         ?>
     </select>
-    <input type="text" name="keyword"></input>
-    <button type="submit">Search</button></br>
+    <input type="text" name="keyword" value="<?php echo $_SESSION['keyword']; ?>"></input>
+    <button type="submit" >Search</button>
+    <button type="submit" name="Clear" value=1>Clear</button></br>
     </form>
 <?php
     if($_SESSION['Edit_Error']){
@@ -162,33 +180,30 @@ include_once('config.php');
         <td class="WideTd">Delete</td>
         </tr>
 <?php
-    if($_POST['order']!=""){
-        $order = " ".$_POST['order'];
+    if($_SESSION['order']!=""){
+        $order = " ".$_SESSION['order'];
     }
     else{
         $order = " id";
     }
-    if($_POST['order_method']!=""){
-        $order_method = " ".$_POST['order_method'];
+    if($_SESSION['order_method']!=""){
+        $order_method = " ".$_SESSION['order_method'];
     }
     else{
         $order_method = " ASC";
     }
-    if($_POST['keyword']!=""){
-        $keyword = "%".$_POST['keyword']."%";
+    if($_SESSION['keyword']!=""){
+        $keyword = "%".$_SESSION['keyword']."%";
     }
     accessDB($db);
     if($db){
-        if($_POST['keyword']!=""){
+        if($_SESSION['keyword']!=""){
             $sql = "SELECT * "
                     ."FROM `airport` "
-                    ."WHERE ". $_POST['search'] ." LIKE '" . $keyword . "' "
+                    ."WHERE ". $_SESSION['search'] ." LIKE '" . $keyword . "' "
                     ."ORDER BY " . $order . $order_method;
             $sth = $db->prepare($sql);
             $result = $sth->execute();
-            var_dump($sth);
-            print_r( $sth->errorInfo());
-            var_dump($result);
         }
         else{
             $sql = "SELECT * FROM `airport` ORDER BY " . $order . $order_method;
