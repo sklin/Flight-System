@@ -111,6 +111,40 @@ include_once('config.php');
     </select>
     <button type="submit">Sort</button></br>
     </form>
+    <?php echo $_POST['search']; ?>
+    <?php echo $_POST['keyword']; ?>
+    <form method="POST" action="airport.php">
+    <select name="search">
+        <?php
+            if($_POST['search']==="id"){
+                echo '<option value="id" selected>ID</option>';
+            }
+            else{
+                echo '<option value="id">ID</option>';
+            }
+            if($_POST['search']==="name"){
+                echo '<option value="name" selected>Name</option>';
+            }
+            else{
+                echo '<option value="name">Name</option>';
+            }
+            if($_POST['search']==="longitude"){
+                echo '<option value="longitude" selected>Longitude</option>';
+            }
+            else{
+                echo '<option value="longitude">Longitude</option>';
+            }
+            if($_POST['search']==="latitude"){
+                echo '<option value="latitude" selected>Latitude</option>';
+            }
+            else{
+                echo '<option value="latitude">Latitude</option>';
+            }
+        ?>
+    </select>
+    <input type="text" name="keyword"></input>
+    <button type="submit">Search</button></br>
+    </form>
 <?php
     if($_SESSION['Edit_Error']){
         echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Edit_Error'].'</font></strong>';
@@ -140,11 +174,27 @@ include_once('config.php');
     else{
         $order_method = " ASC";
     }
+    if($_POST['keyword']!=""){
+        $keyword = "%".$_POST['keyword']."%";
+    }
     accessDB($db);
     if($db){
-        $sql = "SELECT * FROM `airport` ORDER BY " . $order . $order_method;
-        $sth = $db->prepare($sql);
-        $result = $sth->execute();
+        if($_POST['keyword']!=""){
+            $sql = "SELECT * "
+                    ."FROM `airport` "
+                    ."WHERE ". $_POST['search'] ." LIKE '" . $keyword . "' "
+                    ."ORDER BY " . $order . $order_method;
+            $sth = $db->prepare($sql);
+            $result = $sth->execute();
+            var_dump($sth);
+            print_r( $sth->errorInfo());
+            var_dump($result);
+        }
+        else{
+            $sql = "SELECT * FROM `airport` ORDER BY " . $order . $order_method;
+            $sth = $db->prepare($sql);
+            $result = $sth->execute();
+        }
     }
     echo "\n";
     while ($data = $sth->fetchObject()){
