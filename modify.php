@@ -15,7 +15,8 @@
         header("Location: main.php");
         exit();
     }
-    else if($_POST['modify']!=1){
+    #else if($_POST['modify']!=1){
+    else if(!$_POST['edit_id']){
         #print 'modify != 1';
         header("Location: main.php");
         exit();
@@ -69,7 +70,7 @@
                  . "WHERE `flight`.`id` = ?";
             $sth = $db->prepare($sql);
             $result = $sth->execute(
-                array($flight_number,$departure,$destination,$departure_date,$arrival_date,$ticket_price,$_POST['id'])
+                array($flight_number,$departure,$destination,$departure_date,$arrival_date,$ticket_price,$_POST['edit_id'])
                 );
             
             if($result){

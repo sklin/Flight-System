@@ -12,7 +12,7 @@ include_once('config.php');
     }
     $account = $_SESSION['account'];
     $account_ID = $_SESSION['account_ID'];
-
+    $edit_id = $_POST['edit_id'];
     accessDB($db);
 ?>
 
@@ -67,6 +67,7 @@ include_once('config.php');
 ?>
     <?php echo $_POST['order']; ?>
     <?php echo $_POST['order_method']; ?>
+    <?php echo $_POST['edit_id']; ?>
     <form method="POST" action="main.php">
     <select name="order">
         <option value="id">ID</option>
@@ -117,24 +118,112 @@ include_once('config.php');
     echo "\n";
     while ($data = $sth->fetchObject()){
         echo "<tr>";
-        echo "<td>".$data->id."</td>";
-        echo "<td>".$data->flight_number."</td>";
-        echo "<td>".$data->departure."</td>";
-        echo "<td>".$data->destination."</td>";
-        echo "<td>".$data->departure_date."</td>";
-        echo "<td>".$data->arrival_date."</td>";
-        echo "<td>".$data->ticket_price."</td>";
+
+        if($edit_id==$data->id){
+            echo '<form action="modify.php" method="post">';
+        }
 
         echo "<td>";
-        echo '<form action="edit.php" method="post">';
-        echo '<button class="btn btn-info" type="submit" name="Edit" value="'.$data->id.'"> Edit </button>';
-        echo '</form>';
-        echo '</td>';
+        echo $data->id;
+        echo "</td>\n";
+        
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<input type="text" name="flight_number" value="'.$data->flight_number.'"></input>';
+        }
+        else{
+            echo $data->flight_number;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<select name="departure">';
+            $sql3 = "SELECT `name` FROM `airport` ";
+            $sth3 = $db->prepare($sql3);
+            $result3 = $sth3->execute();
+            while ($data3 = $sth3->fetchObject()){
+                if($data3->name===$data->departure){
+                    echo '<option selected>'.$data3->name.'</option>';
+                }
+                else{
+                    echo '<option>'.$data3->name.'</option>';
+                }
+            }
+            echo '</select>';
+        }
+        else{
+            echo $data->departure;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<select name="destination">';
+            $sql3 = "SELECT `name` FROM `airport` ";
+            $sth3 = $db->prepare($sql3);
+            $result3 = $sth3->execute();
+            while ($data3 = $sth3->fetchObject()){
+                if($data3->name===$data->destination){
+                    echo '<option selected>'.$data3->name.'</option>';
+                }
+                else{
+                    echo '<option>'.$data3->name.'</option>';
+                }
+            }
+            echo '</select>';
+        }
+        else{
+            echo $data->destination;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<input type="text" name="departure_date" value="'.$data->departure_date.'"></input>';
+        }
+        else{
+            echo $data->departure_date;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<input type="text" name="arrival_date" value="'.$data->arrival_date.'"></input>';
+        }
+        else{
+            echo $data->arrival_date;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<input type="text" name="ticket_price" value="'.$data->ticket_price.'"></input>';
+        }
+        else{
+            echo $data->ticket_price;
+        }
+        echo "</td>\n";
+
+        echo "<td>";
+        if($edit_id==$data->id){
+            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Comfirm</button>';
+        }
+        else{
+            echo '<form action="main.php" method="post">';
+            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Edit</button>';
+            echo '</form>';
+        }
+        if($edit_id==$data->id){
+            echo '</form>';
+        }
+        echo "</td>\n";
+
         echo '<td>';
         echo '<form action="delete.php" method="post">';
         echo '<button class="btn btn-danger" type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
         echo '</form>';
-        echo "</td>";
+        echo "</td>\n";
 
         echo '<td>';
         $sql2 = "SELECT `id` FROM `compare` "
@@ -152,9 +241,16 @@ include_once('config.php');
             echo '</form>';
         }
         
-        echo "</tr>"."\n";
+        echo "</tr>\n";
     }
     echo "</table>";
+?>
+<?php
+    if($_POST['edit_id']){
+        echo '<a class="btn btn-success" href="main.php" style="position: absolute;left: 90%;">Cancel</a>';
+    }
+?>
+<?php
     # Insert form
     if($_SESSION['Insert_Error']){
         echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Insert_Error'].'</font></strong>';

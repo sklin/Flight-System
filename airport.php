@@ -12,7 +12,7 @@ include_once('config.php');
     }
     $account = $_SESSION['account'];
     $account_ID = $_SESSION['account_ID'];
-    $edit_id = $_POST['edit_id']
+    $edit_id = $_POST['edit_id'];
 ?>
 <!doctype html>
 <html lang="en">
