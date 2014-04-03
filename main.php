@@ -176,11 +176,33 @@ include_once('config.php');
             </tr>
             <tr>
                 <td><input type="text" name="flight_number"></td>
-                <td><input type="text" name="departure"></td>
-                <td><input type="text" name="destination"></td>
+                <td>
+                    <select name="departure">
+__HTML__;
+        $sql = "SELECT `name` FROM `airport` ";
+        $sth = $db->prepare($sql);
+        $result = $sth->execute();
+        while ($data = $sth->fetchObject()){
+            echo '<option>'.$data->name.'</option>';
+        }
+        echo <<<__HTML__
+                    </select>
+                </td>
+                <td>
+                    <select name="destination">
+__HTML__;
+        $sql = "SELECT `name` FROM `airport` ";
+        $sth = $db->prepare($sql);
+        $result = $sth->execute();
+        while ($data = $sth->fetchObject()){
+            echo '<option>'.$data->name.'</option>';
+        }
+        echo <<<__HTML__
+                </td>
                 <td><input type="datetime-local" name="departure_date"></td>
                 <td><input type="datetime-local" name="arrival_date"></td>
                 <td><input type="text" name="ticket_price"></td>
+                    </select>
             </tr>
         </table>
         <br><button class="btn btn-success" name="insert" value=1  type="submit">Submit</button>
