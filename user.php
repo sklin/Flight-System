@@ -61,7 +61,7 @@ include_once('config.php');
         .Logout{
             font-size: 20px;
             position: absolute;
-            left: 80%;
+            left: 90%;
             padding-right: 50px;
         }
         span {
@@ -72,9 +72,12 @@ include_once('config.php');
 </head>
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
-    <br><h5 class="Logout"><a href="compare.php">Comparison sheet</a></h5>
     <h1>Flight System</h1>
     <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
+    <ul class="nav nav-pills">
+        <li class="active"><a href="main.php">Home</a></li>
+        <li><a href="compare.php">Comparison Sheet</a></li>
+    </ul>
     <form method="POST" action="user.php">
     <select name="order">
     <?php

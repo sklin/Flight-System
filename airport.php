@@ -54,7 +54,7 @@ include_once('config.php');
         .Logout{
             font-size: 20px;
             position: absolute;
-            left: 80%;
+            left: 90%;
             padding-right: 50px;
         }
         .Error{
@@ -71,11 +71,14 @@ include_once('config.php');
 </head>
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
-    <br><h5 class="Logout"><a href="authority.php">User list</a></h5>
-    <br><h5 class="Logout"><a href="compare.php">Comparison sheet</a></h5>
-    <br><h5 class="Logout"><a href="main.php">Back</a></h5>
     <h1>Airport management</h1>
     <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
+    <ul class="nav nav-pills">
+        <li><a href="main.php">Home</a></li>
+        <li><a href="authority.php">User List</a></li>
+        <li class="active"><a href="airport.php">Airport List</a></li>
+        <li><a href="compare.php">Comparison Sheet</a></li>
+    </ul>
 <?php
             if($_SESSION['Error']){
                 echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Error'].'</font></strong>';

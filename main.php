@@ -74,10 +74,14 @@ include_once('config.php');
 </head>
 <body>
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
-    <br><h5 class="Logout"><a href="authority.php">User list</a></h5>
-    <br><h5 class="Logout"><a href="compare.php">Comparison sheet</a></h5>
     <h1>Flight System</h1>
     <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
+    <ul class="nav nav-pills">
+        <li class="active"><a href="main.php">Home</a></li>
+        <li><a href="authority.php">User List</a></li>
+        <li><a href="airport.php">Airport List</a></li>
+        <li><a href="compare.php">Comparison Sheet</a></li>
+    </ul>
 <?php
             if($_SESSION['Edit_Error']){
                 echo '<strong class="Error"><font color="#FF0000">'.$_SESSION['Edit_Error'].'</font></strong>';
