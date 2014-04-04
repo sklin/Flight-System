@@ -4,7 +4,7 @@
     include_once('config.php');
     $account = $_POST['account'];
     $password = password_hash($_POST['password']);
-    $is_admin = $_POST['is_admin'];
+    #$is_admin = $_POST['is_admin'];
     
     if(str_replace(" ","",$account)==="")
     {
@@ -31,16 +31,16 @@
         exit();
     }*/
 
-    if($is_admin===null)
-    {
-        #print "is_admin===null<\br>";
-        $is_admin = 0;
-    }
-    else
-    {
-        #print "is_admin!==null<\br>";
-        $is_admin = 1;
-    }
+    #if($is_admin===null)
+    #{
+    #    #print "is_admin===null<\br>";
+    #    $is_admin = 0;
+    #}
+    #else
+    #{
+    #    #print "is_admin!==null<\br>";
+    #    $is_admin = 1;
+    #}
     try
     {
         $dsn = "mysql:host=$db_host;dbname=$db_name";
@@ -70,8 +70,10 @@
             exit();
         }
 
-        $sql = "INSERT INTO `user` (account,password,is_admin)"
-             . " VALUES(?, ?, ?)";
+    #    $sql = "INSERT INTO `user` (account,password,is_admin)"
+    #         . " VALUES(?, ?, ?)";
+        $sql = "INSERT INTO `user` (account,password)"
+             . " VALUES(?, ?)";
         $sth = $db->prepare($sql);
         if($sth)
         {
@@ -81,7 +83,8 @@
         {
             #echo "<br>Prepare fail!</br>";
         }
-        $result = $sth->execute(array($account,$password,$is_admin));
+    #    $result = $sth->execute(array($account,$password,$is_admin));
+        $result = $sth->execute(array($account,$password));
         if($result)
         {
             #echo "<br>Execute success!</br>";

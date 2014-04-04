@@ -13,11 +13,21 @@ include_once('config.php');
     $account = $_SESSION['account'];
     $account_ID = $_SESSION['account_ID'];
     accessDB($db);
-    if($db){
-        $sql = "SELECT * FROM `flight` ORDER BY id";
-        $sth = $db->prepare($sql);
-        $result = $sth->execute();
+?>
+<?php
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
     }
+?>
+<?php
+    $sql = "SELECT * FROM `flight` ORDER BY id";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute();
 ?>
 <?php
     if($_POST['order']!=""){
@@ -237,12 +247,12 @@ include_once('config.php');
     if($_SESSION['user_keyword']!=""){
         $sql = "SELECT * FROM `flight` "
                 ."WHERE ". $_SESSION['user_search'] ." LIKE '" . $keyword . "' "
-                ."ORDER BY " . $order . $order_method;
+                ."ORDER BY " . $order . $order_method . ", flight_number ";
         $sth = $db->prepare($sql);
         $result = $sth->execute(array($_SESSION['account_ID']));
     }
     else{
-        $sql = "SELECT * FROM `flight` ORDER BY " . $order . $order_method;
+        $sql = "SELECT * FROM `flight` ORDER BY " . $order . $order_method . ", flight_number ";
         $sth = $db->prepare($sql);
         $result = $sth->execute();
 

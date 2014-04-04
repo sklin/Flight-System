@@ -28,6 +28,19 @@
         $search = "";
     }
 ?>
+<?php
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
+    accessDB($db);
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
+    }
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -226,7 +239,7 @@
                 ."(SELECT `flight_ID` FROM `compare` "
                 ."WHERE `account_ID` = ? ) "
                 ."AND ". $_SESSION['compare_search'] ." LIKE '" . $keyword . "' "
-                ."ORDER BY " . $order . $order_method;
+                ."ORDER BY " . $order . $order_method . ", flight_number ";
         $sth = $db->prepare($sql);
         $result = $sth->execute(array($_SESSION['account_ID']));
     }
@@ -235,7 +248,7 @@
                 ."WHERE `id` IN "
                 ."(SELECT `flight_ID` FROM `compare` "
                 ."WHERE `account_ID` = ? ) "
-                ."ORDER BY " . $order . $order_method;
+                ."ORDER BY " . $order . $order_method . ", flight_number ";
         $sth = $db->prepare($sql);
         $result = $sth->execute(array($_SESSION['account_ID']));
     }

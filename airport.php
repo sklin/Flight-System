@@ -33,6 +33,19 @@ include_once('config.php');
         $search = "";
     }
 ?>
+<?php
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
+    accessDB($db);
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
+    }
+?>
 <!doctype html>
 <html lang="en">
 <head>

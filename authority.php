@@ -12,6 +12,20 @@
         exit();
     }
     accessDB($db);
+?>
+<?php
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
+    }
+?>
+<?php
     if($_POST['delete']){
         $sql = "DELETE FROM `user` "
              . "WHERE id = ?";

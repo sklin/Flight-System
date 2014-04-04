@@ -53,7 +53,6 @@
         <form class="form-signin" action="register.php" method="POST">
             <h4>Account : <input type="text" name="account"></h4>
             <h4>Password : <input type="password" name="password"></h4>
-            <br><input type="checkbox" name="is_admin" value=1> Is Admin ?</br>
             <br><button class="btn btn-primary" type="submit">Register!</button></br>
             <h4><a href="login.php">返回登陸頁面</a></h3>
         </form>
