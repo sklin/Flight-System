@@ -22,6 +22,18 @@ include_once('config.php');
     if($_POST['order_method']!=""){
         $_SESSION['main_order_method'] = $_POST['order_method'];
     }
+    if($_POST['search']!=""){
+        $_SESSION['main_search'] = $_POST['search'];
+    }
+    if($_POST['keyword']!=""){
+        $_SESSION['main_keyword'] = $_POST['keyword'];
+    }
+    if($_POST['Clear']==1){
+        unset($_SESSION['main_keyword']);
+        unset($_SESSION['main_search']);    
+        $keyword = "";
+        $search = "";
+    }
 ?>
 
 <!doctype html>
@@ -139,7 +151,58 @@ include_once('config.php');
             }
     ?>
     </select>
-    <button type="submit">Sort</button></br>
+    <button type="submit">Sort</button>
+    </form>
+    <form method="POST" action="main.php">
+    <select name="search">
+        <?php
+            if($_SESSION['main_search']==="id"){
+                echo '<option value="id" selected>ID</option>';
+            }
+            else{
+                echo '<option value="id">ID</option>';
+            }
+            if($_SESSION['main_search']==="flight_number"){
+                echo '<option value="flight_number" selected>Flight Number</option>';
+            }
+            else{
+                echo '<option value="flight_number">Flight Number</option>';
+            }
+            if($_SESSION['main_search']==="departure"){
+                echo '<option value="departure" selected>Departure</option>';
+            }
+            else{
+                echo '<option value="departure">Departure</option>';
+            }
+            if($_SESSION['main_search']==="destination"){
+                echo '<option value="destination" selected>Destination</option>';
+            }
+            else{
+                echo '<option value="destination">Destination</option>';
+            }
+            if($_SESSION['main_search']==="departure_date"){
+                echo '<option value="departure_date" selected>Departure Date</option>';
+            }
+            else{
+                echo '<option value="departure_date">Departure Date</option>';
+            }
+            if($_SESSION['main_search']==="arrival_date"){
+                echo '<option value="arrival_date" selected>Arrival Date</option>';
+            }
+            else{
+                echo '<option value="arrival_date">Arrival Date</option>';
+            }
+            if($_SESSION['main_search']==="ticket_price"){
+                echo '<option value="ticket_price" selected>Ticket Price</option>';
+            }
+            else{
+                echo '<option value="ticket_price">Ticket Price</option>';
+            }
+        ?>
+    </select>
+    <input type="text" name="keyword" value="<?php echo $_SESSION['main_keyword']; ?>"></input>
+    <button type="submit" >Search</button>
+    <button type="submit" name="Clear" value=1>Clear</button></br>
     </form>
     <table class="MainTable table table-hover table-condensed" width=1000 cellspacing=2 >
         <tr>
@@ -167,10 +230,22 @@ include_once('config.php');
     else{
         $order_method = " ASC";
     }
-    if($db){
+    if($_SESSION['main_keyword']!=""){
+        $keyword = "%".$_SESSION['main_keyword']."%";
+    }
+    
+    if($_SESSION['main_keyword']!=""){
+        $sql = "SELECT * FROM `flight` "
+                ."WHERE ". $_SESSION['main_search'] ." LIKE '" . $keyword . "' "
+                ."ORDER BY " . $order . $order_method;
+        $sth = $db->prepare($sql);
+        $result = $sth->execute(array($_SESSION['account_ID']));
+    }
+    else{
         $sql = "SELECT * FROM `flight` ORDER BY " . $order . $order_method;
         $sth = $db->prepare($sql);
         $result = $sth->execute();
+
     }
     echo "\n";
     while ($data = $sth->fetchObject()){

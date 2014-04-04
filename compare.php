@@ -15,6 +15,18 @@
     if($_POST['order_method']!=""){
         $_SESSION['compare_order_method'] = $_POST['order_method'];
     }
+    if($_POST['search']!=""){
+        $_SESSION['compare_search'] = $_POST['search'];
+    }
+    if($_POST['keyword']!=""){
+        $_SESSION['compare_keyword'] = $_POST['keyword'];
+    }
+    if($_POST['Clear']==1){
+        unset($_SESSION['compare_keyword']);
+        unset($_SESSION['compare_search']);    
+        $keyword = "";
+        $search = "";
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -52,6 +64,7 @@
 <body>
     <h5 class="Logout"><a href="main.php">back</a></h5>
     <h1>Comparison sheet</h1>
+    <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
     <form method="POST" action="compare.php">
     <select name="order">
     <?php
@@ -115,7 +128,58 @@
             }
     ?>
     </select>
-    <button type="submit">Sort</button></br>
+    <button type="submit">Sort</button>
+    </form>
+    <form method="POST" action="compare.php">
+    <select name="search">
+        <?php
+            if($_SESSION['compare_search']==="id"){
+                echo '<option value="id" selected>ID</option>';
+            }
+            else{
+                echo '<option value="id">ID</option>';
+            }
+            if($_SESSION['compare_search']==="flight_number"){
+                echo '<option value="flight_number" selected>Flight Number</option>';
+            }
+            else{
+                echo '<option value="flight_number">Flight Number</option>';
+            }
+            if($_SESSION['compare_search']==="departure"){
+                echo '<option value="departure" selected>Departure</option>';
+            }
+            else{
+                echo '<option value="departure">Departure</option>';
+            }
+            if($_SESSION['compare_search']==="destination"){
+                echo '<option value="destination" selected>Destination</option>';
+            }
+            else{
+                echo '<option value="destination">Destination</option>';
+            }
+            if($_SESSION['compare_search']==="departure_date"){
+                echo '<option value="departure_date" selected>Departure Date</option>';
+            }
+            else{
+                echo '<option value="departure_date">Departure Date</option>';
+            }
+            if($_SESSION['compare_search']==="arrival_date"){
+                echo '<option value="arrival_date" selected>Arrival Date</option>';
+            }
+            else{
+                echo '<option value="arrival_date">Arrival Date</option>';
+            }
+            if($_SESSION['compare_search']==="ticket_price"){
+                echo '<option value="ticket_price" selected>Ticket Price</option>';
+            }
+            else{
+                echo '<option value="ticket_price">Ticket Price</option>';
+            }
+        ?>
+    </select>
+    <input type="text" name="keyword" value="<?php echo $_SESSION['compare_keyword']; ?>"></input>
+    <button type="submit" >Search</button>
+    <button type="submit" name="Clear" value=1>Clear</button></br>
     </form>
         <table class="MainTable table-bordered table table-hover table-condensed" width=1000 border=2 cellspacing=2 >
             <tr>
@@ -142,14 +206,29 @@
     else{
         $order_method = " ASC";
     }
+    if($_SESSION['compare_keyword']!=""){
+        $keyword = "%".$_SESSION['compare_keyword']."%";
+    }
     
-    $sql = "SELECT * FROM `flight` "
-            ."WHERE `id` IN "
-            ."(SELECT `flight_ID` FROM `compare` "
-            ."WHERE `account_ID` = ? ) "
-            ."ORDER BY " . $order . $order_method;
-    $sth = $db->prepare($sql);
-    $result = $sth->execute(array($_SESSION['account_ID']));
+    if($_SESSION['compare_keyword']!=""){
+        $sql = "SELECT * FROM `flight` "
+                ."WHERE `id` IN "
+                ."(SELECT `flight_ID` FROM `compare` "
+                ."WHERE `account_ID` = ? ) "
+                ."AND ". $_SESSION['compare_search'] ." LIKE '" . $keyword . "' "
+                ."ORDER BY " . $order . $order_method;
+        $sth = $db->prepare($sql);
+        $result = $sth->execute(array($_SESSION['account_ID']));
+    }
+    else{
+        $sql = "SELECT * FROM `flight` "
+                ."WHERE `id` IN "
+                ."(SELECT `flight_ID` FROM `compare` "
+                ."WHERE `account_ID` = ? ) "
+                ."ORDER BY " . $order . $order_method;
+        $sth = $db->prepare($sql);
+        $result = $sth->execute(array($_SESSION['account_ID']));
+    }
     echo '<tr>';
     while ($data = $sth->fetchObject()){
         echo "<tr>";
