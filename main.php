@@ -79,6 +79,9 @@ include_once('config.php');
         .WideTd{
             width: 80px;
         }
+        input{
+            width: 120px;
+        }
         
     </style>
 </head>
@@ -221,15 +224,15 @@ include_once('config.php');
     <table class="MainTable table table-hover table-condensed" width=1000 cellspacing=2 >
         <tr>
         <td>#</td>
-        <td>Flight Number</td>
-        <td>Departure</td>
-        <td>Destination</td>
-        <td>Departure Date</td>
-        <td>Arrival Date</td>
-        <td>Ticket Price</td>
-        <td class="WideTd">Edit</td>
-        <td class="WideTd">Delete</td>
-        <td class="WideTd">Compare</td>
+        <td width=160>Flight Number</td>
+        <td width=160>Departure</td>
+        <td width=160>Destination</td>
+        <td width=160>Departure Date</td>
+        <td width=160>Arrival Date</td>
+        <td width=160>Ticket Price</td>
+        <td width=80 class="WideTd">Edit</td>
+        <td width=80 class="WideTd">Delete</td>
+        <td width=80 class="WideTd">Compare</td>
         </tr>
 <?php
     if($_SESSION['main_order']!=""){
@@ -273,7 +276,7 @@ include_once('config.php');
         echo $data->id;
         echo "</td>\n";
         
-        echo "<td>";
+        echo "<td width=160>";
         if($edit_id==$data->id){
             echo '<input type="text" name="flight_number" value="'.$data->flight_number.'"></input>';
         }
@@ -282,7 +285,7 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo "<td>";
+        echo "<td width=160>";
         if($edit_id==$data->id){
             echo '<select name="departure">';
             $sql3 = "SELECT `name` FROM `airport` ";
@@ -303,7 +306,7 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo "<td>";
+        echo "<td width=160>";
         if($edit_id==$data->id){
             echo '<select name="destination">';
             $sql3 = "SELECT `name` FROM `airport` ";
@@ -324,7 +327,7 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo "<td>";
+        echo "<td width=160>";
         if($edit_id==$data->id){
             echo '<input type="datetime-local" name="departure_date" value="'.$data->departure_date.'"></input>';
         }
@@ -333,7 +336,7 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo "<td>";
+        echo "<td width=160>";
         if($edit_id==$data->id){
             echo '<input type="datetime-local" name="arrival_date" value="'.$data->arrival_date.'"></input>';
         }
@@ -342,7 +345,7 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo "<td>";
+        echo "<td width=160>";
         if($edit_id==$data->id){
             echo '<input type="text" name="ticket_price" value="'.$data->ticket_price.'"></input>';
         }
@@ -351,7 +354,7 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo "<td>";
+        echo "<td width=80>";
         if($edit_id==$data->id){
             echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Comfirm</button>';
         }
@@ -365,13 +368,13 @@ include_once('config.php');
         }
         echo "</td>\n";
 
-        echo '<td>';
+        echo "<td width=80>";
         echo '<form action="delete.php" method="post">';
         echo '<button class="btn btn-danger" type="submit" name="Delete" value="'.$data->id.'">Delete</button>';
         echo '</form>';
         echo "</td>\n";
 
-        echo '<td>';
+        echo "<td width=80>";
         $sql2 = "SELECT `id` FROM `compare` "
                 ."WHERE `account_ID` = ?  AND `flight_ID` = ? ";
         $sth2 = $db->prepare($sql2);

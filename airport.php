@@ -249,19 +249,19 @@ include_once('config.php');
 
         echo "<td>";
         if($edit_id==$data->id){
-            echo '<input type="number" name="longitude" step=0.01 placeholder="Longitude" value="'.$data->longitude.'"></input>';
+            echo '<input type="number" name="longitude" step=0.00001 min=-180 max=180 placeholder="Longitude" value="'.$data->longitude.'"></input>';
         }
         else{
-            echo $data->longitude;
+            echo number_format($data->longitude,5);
         }
         echo "</td>\n";
         
         echo "<td>";
         if($edit_id==$data->id){
-            echo '<input type="number" name="latitude" step=0.01 placeholder="Latitude" value="'.$data->latitude.'"></input>';
+            echo '<input type="number" name="latitude" step=0.00001 min=-90 max=90 placeholder="Latitude" value="'.$data->latitude.'"></input>';
         }
         else{
-            echo $data->latitude;
+            echo number_format($data->latitude,5);
         }
         echo "</td>\n";
 
@@ -314,8 +314,8 @@ include_once('config.php');
             </tr>
             <tr>
                 <td><input type="text" name="name"></td>
-                <td><input type="number" name="longitude" step=0.01 placeholder="Longitude"></input></td>
-                <td><input type="number" name="latitude" step=0.01 placeholder="Latitude"></input></td>
+                <td><input type="number" name="longitude"  min=-180 max=180  step=0.00001 placeholder="Longitude"></input></td>
+                <td><input type="number" name="latitude" min=-90 max=90 step=0.00001 placeholder="Latitude"></input></td>
             </tr>
         </table>
         <br><button class="btn btn-success" name="insert" value=1  type="submit">Submit</button>
