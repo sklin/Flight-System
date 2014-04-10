@@ -2,6 +2,21 @@
     session_save_path('./sessions');
     session_start();
     include_once('config.php');
+?>
+<?php
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
+    accessDB($db);
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
+    }
+?>
+<?php
     #print count($_POST);
     #if(count($_POST)==0){//POST ???
     if(!$_SESSION['account']){

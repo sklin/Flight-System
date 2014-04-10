@@ -19,6 +19,17 @@ include_once('config.php');
 ?>
 <?php
     accessDB($db);
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
+    }
+?>
+<?php
+    accessDB($db);
     if(str_replace(" ","",$name)===""){
         $_SESSION['Edit_Error'] = "Airport name can not be empty!";
         header("Location: airport.php");

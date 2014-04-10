@@ -15,6 +15,16 @@ include_once('config.php');
     accessDB($db);
 ?>
 <?php
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
+        exit();
+    }
+?>
+<?php
 $name = $_POST['name'];
 $longitude = $_POST['longitude'];
 $latitude = $_POST['latitude'];
