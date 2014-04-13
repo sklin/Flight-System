@@ -273,5 +273,77 @@
     }
 ?>
         </table>
+        <br></br>
+        <h3>Not in comparison sheet</h3>
+        <table class="MainTable table-bordered table table-hover table-condensed" width=1000 border=2 cellspacing=2 >
+            <tr>
+            <td>#</td>
+            <td>Flight Number</td>
+            <td>Departure</td>
+            <td>Destination</td>
+            <td>Departure Date</td>
+            <td>Arrival Date</td>
+            <td>Ticket Price</td>
+            <td class="WideTd">Add</td>
+            </tr>
+<?php
+    accessDB($db);
+    if($_SESSION['compare_order']!=""){
+        $order = " ".$_SESSION['compare_order'];
+    }
+    else{
+        $order = " id";
+    }
+    if($_SESSION['compare_order_method']!=""){
+        $order_method = " ".$_SESSION['compare_order_method'];
+    }
+    else{
+        $order_method = " ASC";
+    }
+    if($_SESSION['compare_keyword']!=""){
+        $keyword = "%".$_SESSION['compare_keyword']."%";
+    }
+    
+    if($_SESSION['compare_keyword']!=""){
+        $sql = "SELECT * FROM `flight` "
+                ."WHERE `id` IN "
+                ."(SELECT `flight_ID` FROM `compare` "
+                ."WHERE `account_ID` = ? ) "
+                ."AND ". $_SESSION['compare_search'] ." LIKE '" . $keyword . "' "
+                ."ORDER BY " . $order . $order_method . ", flight_number ";
+        $sth = $db->prepare($sql);
+        $result = $sth->execute(array($_SESSION['account_ID']));
+    }
+    else{
+        $sql = "SELECT * FROM `flight` "
+                ."WHERE `id` NOT IN "
+                ."(SELECT `flight_ID` FROM `compare` "
+                ."WHERE `account_ID` = ? ) "
+                ."ORDER BY " . $order . $order_method . ", flight_number ";
+        $sth = $db->prepare($sql);
+        $result = $sth->execute(array($_SESSION['account_ID']));
+    }
+    echo '<tr>';
+    while ($data = $sth->fetchObject()){
+        echo "<tr>";
+        echo "<td>".$data->id."</td>";
+        echo "<td>".$data->flight_number."</td>";
+        echo "<td>".$data->departure."</td>";
+        echo "<td>".$data->destination."</td>";
+        echo "<td>".$data->departure_date."</td>";
+        echo "<td>".$data->arrival_date."</td>";
+        echo "<td>".$data->ticket_price."</td>";
+
+        echo '<td>';
+        echo '<form action="add_compare.php" method="post">';
+        echo '<button class="btn btn-success" type="submit" name="add_compare" value="'.$data->id.'">Add</button>';
+        echo '</form>';
+        echo '</td>';
+        
+        echo "</tr>";
+    }
+?>
+        </table>
+
 </body>
 </html>
