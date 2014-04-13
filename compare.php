@@ -78,15 +78,15 @@
     <h5 class="Logout"><a href="logout.php">logout</a></h5>
     <h1>Comparison sheet</h1>
     <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
-    <ul class="nav nav-pills">
-        <li><a href="main.php">Home</a></li>
+    <ul class="nav nav-tabs">
+        <li><a href="main.php"><i class="icon-home"></i> Home</a></li>
     <?php
         if($_SESSION['is_admin']==1){
-            echo '<li><a href="authority.php">User List</a></li>';
-            echo '<li><a href="airport.php">Airport List</a></li>';
+            echo '<li><a href="authority.php"><i class="icon-user"></i> User List</a></li>';
+            echo '<li><a href="airport.php"><i class="icon-plane"></i> Airport List</a></li>';
         }
     ?>
-        <li class="active"><a href="compare.php">Comparison Sheet</a></li>
+        <li class="active"><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
     </ul>
     <form method="POST" action="compare.php">
     <select name="order">
