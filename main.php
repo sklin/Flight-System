@@ -222,7 +222,7 @@ include_once('config.php');
     </form>
     <table class="MainTable table table-hover table-condensed" width=1000 cellspacing=2 >
         <tr>
-        <td>#</td>
+        <td width=10>#</td>
         <td width=160>Flight Number</td>
         <td width=160>Departure</td>
         <td width=160>Destination</td>
