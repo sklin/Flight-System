@@ -92,6 +92,7 @@ include_once('config.php');
         <li class="active"><a href="main.php"><i class="icon-home"></i> Home</a></li>
         <li><a href="authority.php"><i class="icon-user"></i> User List</a></li>
         <li><a href="airport.php"><i class="icon-plane"></i> Airport List</a></li>
+        <li><a href="country.php"><i class="icon-globe"></i> Country List</a></li>
         <li><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
     </ul>
 <?php

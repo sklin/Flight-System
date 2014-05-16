@@ -84,6 +84,7 @@
         if($_SESSION['is_admin']==1){
             echo '<li><a href="authority.php"><i class="icon-user"></i> User List</a></li>';
             echo '<li><a href="airport.php"><i class="icon-plane"></i> Airport List</a></li>';
+            echo '<li><a href="country.php"><i class="icon-globe"></i> Country List</a></li>';
         }
     ?>
         <li class="active"><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
@@ -306,7 +307,7 @@
     
     if($_SESSION['compare_keyword']!=""){
         $sql = "SELECT * FROM `flight` "
-                ."WHERE `id` IN "
+                ."WHERE `id` NOT IN "
                 ."(SELECT `flight_ID` FROM `compare` "
                 ."WHERE `account_ID` = ? ) "
                 ."AND ". $_SESSION['compare_search'] ." LIKE '" . $keyword . "' "

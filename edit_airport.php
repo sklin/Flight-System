@@ -14,8 +14,11 @@ include_once('config.php');
     $account_ID = $_SESSION['account_ID'];
     $edit_id = $_POST['edit_id'];
     $name = $_POST['name'];
+    $full_name = $_POST['full_name'];
+    $country_id = $_POST['Country'];
     $longitude = $_POST['longitude'];
     $latitude = $_POST['latitude'];
+    $timezone = $_POST['timezone'];
 ?>
 <?php
     accessDB($db);
@@ -44,6 +47,11 @@ include_once('config.php');
         header("Location: airport.php");
         exit();
     }
+    if(str_replace(" ","",$full_name)===""){
+        $_SESSION['Edit_Error'] = "Airport Full name can not be empty!";
+        header("Location: airport.php");
+        exit();
+    }
     if(str_replace(" ","",$longitude)===""){
         $_SESSION['Edit_Error'] = "Longitude can not be empty!";
         header("Location: airport.php");
@@ -65,11 +73,11 @@ include_once('config.php');
         exit();
     }
     $sql = "UPDATE `airport` "
-         . "SET `name` = ? , `longitude` = ? , `latitude` = ? "
+         . "SET `name` = ? , `full_name` = ?, `country_id` = ?, `longitude` = ? , `latitude` = ?, `timezone` = ? "
          . "WHERE `airport`.`id` = ?";
     $sth = $db->prepare($sql);
     $result = $sth->execute(
-        array($name,$longitude,$latitude,$edit_id)
+        array($name,$full_name,$country_id,$longitude,$latitude,$timezone,$edit_id)
         );
     if($result){
         header("Location: airport.php");
