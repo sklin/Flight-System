@@ -1,6 +1,15 @@
 <?php
 include_once('config.php');
 
+function css_inner_block()
+{
+    echo <<<__HTML__
+    .inner-block {
+        width: 670px;
+    }
+__HTML__;
+}
+
 function no_transfer($depart,$dest,$order,$method)
 {
     accessDB($db);
@@ -30,7 +39,7 @@ __SQL__;
     echo <<<__HTML__
     <table class="table table-hover table-condensed">
     <tr>
-    <td>Result</td>
+    <td>#</td>
     <td>Flight Number</td>
     <td>Departure Airport</td>
     <td>Destination Airport</td>
@@ -194,18 +203,22 @@ __SQL__;
     $sth = $db->prepare($sql);
     $result = $sth->execute(array($depart,$dest,$dest));
     echo <<<__HTML__
-        <table class="table table-hover table-condensed">
+        <table class="table table-striped" style="width: 1400px;">
             <tr>
-                <td>Result</td>
-                <td>Flight Number</td>
-                <td>Departure Airport</td>
-                <td>Destination Airport</td>
-                <td>Departure Time</td>
-                <td>Arrival Time</td>
-                <td>Flight Time</td>
-                <td>Transfer Time</td>
-                <td>Total Time</td>
-                <td>Price</td>
+                <td style="width: 50px;">#</td>
+                <td style="width: 700px;">
+                    <table class="inner-block table-hover">
+                        <td style="width: 110px;">Flight Number</td>
+                        <td style="width: 130px;">Departure Airport</td>
+                        <td style="width: 130px;">Destination Airport</td>
+                        <td style="width: 150px;">Departure Time</td>
+                        <td style="width: 150px;">Arrival Time</td>
+                    </table>
+                </td>
+                <td style="width: 120px;">Flight Time</td>
+                <td style="width: 120px;">Transfer Time</td>
+                <td style="width: 120px;">Total Time</td>
+                <td style="width: 120px;">Price</td>
             </tr>
 __HTML__;
 
@@ -213,38 +226,44 @@ __HTML__;
     while($data=$sth->fetchObject()){
         if($data->one_second_flight_number !== NULL){
             echo '<tr>';
-            echo '<td rowspan=2>' . ++$counter . '</td>';
-            echo '<td>' . $data->one_first_flight_number . '</td>';
-            echo '<td>' . $data->one_first_departure . '</td>';
-            echo '<td>' . $data->one_first_destination . '</td>';
-            echo '<td>' . $data->one_first_departure_time . '</td>';
-            echo '<td>' . $data->one_first_arrival_time . '</td>';
-            echo '<td rowspan=2>' . $data->flight_time . '</td>';
-            echo '<td rowspan=2>' . $data->transfer_time . '</td>';
-            echo '<td rowspan=2>' . $data->total_time . '</td>';
-            echo '<td rowspan=2>' . $data->price . '</td>';
+            echo '<td style="width: 50px;">' . ++$counter . '</td>';
+            echo <<<__HTML__
+            <td style="width: 700px;">
+            <table class="inner-block table-hover">
+                <tr><td style="width: 110px;">{$data->one_first_flight_number}</td>
+                <td style="width: 130px;">{$data->one_first_departure}</td>
+                <td style="width: 130px;">{$data->one_first_destination}</td>
+                <td style="width: 150px;">{$data->one_first_departure_time}</td>
+                <td style="width: 150px;">{$data->one_first_arrival_time}</td></tr>
+                <tr><td style="width: 110px;">{$data->one_second_flight_number}</td>
+                <td style="width: 130px;">{$data->one_second_departure}</td>
+                <td style="width: 130px;">{$data->one_second_destination}</td>
+                <td style="width: 150px;">{$data->one_second_departure_time}</td>
+                <td style="width: 150px;">{$data->one_second_arrival_time}</td></tr>
+            </table>
+            </td>
+__HTML__;
+            echo '<td style="width: 120px;">' . $data->flight_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->transfer_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->total_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->price . '</td>';
             echo '</tr>';
 
-            echo '<tr>';
-            echo '<td>' . $data->one_second_flight_number . '</td>';
-            echo '<td>' . $data->one_second_departure . '</td>';
-            echo '<td>' . $data->one_second_destination . '</td>';
-            echo '<td>' . $data->one_second_departure_time . '</td>';
-            echo '<td>' . $data->one_second_arrival_time . '</td>';
-            echo '</tr>';
         }
         else{
             echo '<tr>';
-            echo '<td>' . ++$counter . '</td>';
-            echo '<td>' . $data->one_first_flight_number . '</td>';
-            echo '<td>' . $data->one_first_departure . '</td>';
-            echo '<td>' . $data->one_first_destination . '</td>';
-            echo '<td>' . $data->one_first_departure_time . '</td>';
-            echo '<td>' . $data->one_first_arrival_time . '</td>';
-            echo '<td>' . $data->flight_time . '</td>';
-            echo '<td>' . $data->transfer_time . '</td>';
-            echo '<td>' . $data->total_time . '</td>';
-            echo '<td>' . $data->price . '</td>';
+            echo '<td style="width: 50px;">' . ++$counter . '</td>';
+            echo '<td style="width: 700px;"><table class="inner-block table-hover">';
+                echo '<td style="width: 110px;">' . $data->one_first_flight_number . '</td>';
+                echo '<td style="width: 130px;">' . $data->one_first_departure . '</td>';
+                echo '<td style="width: 130px;">' . $data->one_first_destination . '</td>';
+                echo '<td style="width: 150px;">' . $data->one_first_departure_time . '</td>';
+                echo '<td style="width: 150px;">' . $data->one_first_arrival_time . '</td>';
+            echo '</table></td>';
+            echo '<td style="width: 120px;">' . $data->flight_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->transfer_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->total_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->price . '</td>';
             echo '</tr>';
         }
 
@@ -459,86 +478,101 @@ __SQL__;
     $sth = $db->prepare($sql);
     $result = $sth->execute(array($depart,$dest,$depart,$dest,$depart,$dest));
     echo <<<__HTML__
-    <table class="table table-hover table-condensed">
+    <table class="table table-striped" style="width: 1400px;">
     <tr>
-    <td>Result</td>
-    <td>Flight Number</td>
-    <td>Departure Airport</td>
-    <td>Destination Airport</td>
-    <td>Departure Time</td>
-    <td>Arrival Time</td>
-    <td>Flight Time</td>
-    <td>Transfer Time</td>
-    <td>Total Time</td>
-    <td>Price</td>
+    <td style="width: 50px;">#</td>
+    <td style="width: 700px;">
+        <table class="inner-block table-hover">
+            <td style="width: 110px;">Flight Number</td>
+            <td style="width: 130px;">Departure Airport</td>
+            <td style="width: 130px;">Destination Airport</td>
+            <td style="width: 150px;">Departure Time</td>
+            <td style="width: 150px;">Arrival Time</td>
+        </table>
+    </td>
+    <td style="width: 120px;">Flight Time</td>
+    <td style="width: 120px;">Transfer Time</td>
+    <td style="width: 120px;">Total Time</td>
+    <td style="width: 120px;">Price</td>
     </tr>
 __HTML__;
     $count = 0;
     while($data=$sth->fetchObject()){
         if($data->two_second_flight_number !== NULL && $data->two_third_flight_number !== NULL){
             echo '<tr>';
-            echo '<td rowspan=3>' . ++$counter . '</td>';
-            echo '<td>' . $data->two_first_flight_number . '</td>';
-            echo '<td>' . $data->two_first_departure . '</td>';
-            echo '<td>' . $data->two_first_destination . '</td>';
-            echo '<td>' . $data->two_first_departure_time . '</td>';
-            echo '<td>' . $data->two_first_arrival_time . '</td>';
-            echo '<td rowspan=3>' . $data->flight_time . '</td>';
-            echo '<td rowspan=3>' . $data->transfer_time . '</td>';
-            echo '<td rowspan=3>' . $data->total_time . '</td>';
-            echo '<td rowspan=3>' . $data->price . '</td>';
-            echo '</tr>';
-
-            echo '<tr>';
-            echo '<td>' . $data->two_second_flight_number . '</td>';
-            echo '<td>' . $data->two_second_departure . '</td>';
-            echo '<td>' . $data->two_second_destination . '</td>';
-            echo '<td>' . $data->two_second_departure_time . '</td>';
-            echo '<td>' . $data->two_second_arrival_time . '</td>';
-            echo '</tr>';
-
-            echo '<tr>';
-            echo '<td>' . $data->two_third_flight_number . '</td>';
-            echo '<td>' . $data->two_third_departure . '</td>';
-            echo '<td>' . $data->two_third_destination . '</td>';
-            echo '<td>' . $data->two_third_departure_time . '</td>';
-            echo '<td>' . $data->two_third_arrival_time . '</td>';
+            echo '<td style="width: 50px;">' . ++$counter . '</td>';
+            echo <<<__HTML__
+            <td style="width: 700px;">
+            <table class="inner-block table-hover">
+                <tr><td style="width: 110px;">{$data->two_first_flight_number}</td>
+                <td style="width: 130px;">{$data->two_first_departure}</td>
+                <td style="width: 130px;">{$data->two_first_destination}</td>
+                <td style="width: 150px;">{$data->two_first_departure_time}</td>
+                <td style="width: 150px;">{$data->two_first_arrival_time}</td></tr>
+                <td style="width: 110px;">{$data->two_second_flight_number}</td>
+                <td style="width: 130px;">{$data->two_second_departure}</td>
+                <td style="width: 130px;">{$data->two_second_destination}</td>
+                <td style="width: 150px;">{$data->two_second_departure_time}</td>
+                <td style="width: 150px;">{$data->two_second_arrival_time}</td>
+                <tr><td style="width: 110px;">{$data->two_third_flight_number}</td>
+                <td style="width: 130px;">{$data->two_third_departure}</td>
+                <td style="width: 130px;">{$data->two_third_destination}</td>
+                <td style="width: 150px;">{$data->two_third_departure_time}</td>
+                <td style="width: 150px;">{$data->two_third_arrival_time}</td></tr>
+            </table>
+            </td>
+__HTML__;
+            echo '<td style="width: 120px;">' . $data->flight_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->transfer_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->total_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->price . '</td>';
             echo '</tr>';
         }
         else if($data->two_second_flight_number !== NULL){
             echo '<tr>';
-            echo '<td rowspan=2>' . ++$counter . '</td>';
-            echo '<td>' . $data->two_first_flight_number . '</td>';
-            echo '<td>' . $data->two_first_departure . '</td>';
-            echo '<td>' . $data->two_first_destination . '</td>';
-            echo '<td>' . $data->two_first_departure_time . '</td>';
-            echo '<td>' . $data->two_first_arrival_time . '</td>';
-            echo '<td rowspan=2>' . $data->flight_time . '</td>';
-            echo '<td rowspan=2>' . $data->transfer_time . '</td>';
-            echo '<td rowspan=2>' . $data->total_time . '</td>';
-            echo '<td rowspan=2>' . $data->price . '</td>';
+            echo '<td style="width: 50px;">' . ++$counter . '</td>';
+            echo <<<__HTML__
+            <td style="width: 700px;">
+            <table class="inner-block table-hover">
+                <tr><td style="width: 110px;">{$data->two_first_flight_number}</td>
+                <td style="width: 130px;">{$data->two_first_departure}</td>
+                <td style="width: 130px;">{$data->two_first_destination}</td>
+                <td style="width: 150px;">{$data->two_first_departure_time}</td>
+                <td style="width: 150px;">{$data->two_first_arrival_time}</td></tr>
+                <td style="width: 110px;">{$data->two_second_flight_number}</td>
+                <td style="width: 130px;">{$data->two_second_departure}</td>
+                <td style="width: 130px;">{$data->two_second_destination}</td>
+                <td style="width: 150px;">{$data->two_second_departure_time}</td>
+                <td style="width: 150px;">{$data->two_second_arrival_time}</td></tr>
+            </table>
+            </td>
+__HTML__;
+            echo '<td style="width: 120px;">' . $data->flight_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->transfer_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->total_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->price . '</td>';
             echo '</tr>';
 
-            echo '<tr>';
-            echo '<td>' . $data->two_second_flight_number . '</td>';
-            echo '<td>' . $data->two_second_departure . '</td>';
-            echo '<td>' . $data->two_second_destination . '</td>';
-            echo '<td>' . $data->two_second_departure_time . '</td>';
-            echo '<td>' . $data->two_second_arrival_time . '</td>';
-            echo '</tr>';
         }
         else{
             echo '<tr>';
-            echo '<td>' . ++$counter . '</td>';
-            echo '<td>' . $data->two_first_flight_number . '</td>';
-            echo '<td>' . $data->two_first_departure . '</td>';
-            echo '<td>' . $data->two_first_destination . '</td>';
-            echo '<td>' . $data->two_first_departure_time . '</td>';
-            echo '<td>' . $data->two_first_arrival_time . '</td>';
-            echo '<td>' . $data->flight_time . '</td>';
-            echo '<td>' . $data->transfer_time . '</td>';
-            echo '<td>' . $data->total_time . '</td>';
-            echo '<td>' . $data->price . '</td>';
+            echo '<td style="width: 50px;">' . ++$counter . '</td>';
+            echo '<td style="width: 700px;"><table>';
+                echo '<td style="width: 100px;">' . $data->two_first_flight_number . '</td>';
+                echo '<td style="width: 120px;">' . $data->two_first_departure . '</td>';
+                echo '<td style="width: 120px;">' . $data->two_first_destination . '</td>';
+                echo '<td style="width: 140px;">' . $data->two_first_departure_time . '</td>';
+                echo '<td style="width: 140px;">' . $data->two_first_arrival_time . '</td>';
+                #echo '<td style="width: 110px;">' . $data->two_first_flight_number . '</td>';
+                #echo '<td style="width: 130px;">' . $data->two_first_departure . '</td>';
+                #echo '<td style="width: 130px;">' . $data->two_first_destination . '</td>';
+                #echo '<td style="width: 150px;">' . $data->two_first_departure_time . '</td>';
+                #echo '<td style="width: 150px;">' . $data->two_first_arrival_time . '</td>';
+            echo '</table></td>';
+            echo '<td style="width: 120px;">' . $data->flight_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->transfer_time . '</td>';
+            echo '<td style="width: 120px;">' . $data->total_time . '</td>';
+            echo '<td style="width: 120px;" style="width: 120px;">' . $data->price . '</td>';
             echo '</tr>';
         }
         #echo '<td>' . $data-> . '</td>';

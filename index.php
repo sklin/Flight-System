@@ -77,6 +77,9 @@
             padding-top: 10px;
             padding-left: 50px;
         }
+        <?php
+            css_inner_block();
+        ?>
     </style>
 </head>
 <body>
@@ -169,7 +172,7 @@ __HTML__;
         <button type="submit" class="btn btn-success" name="Cancel" value=1>Cancel</button>
     </form>
     </div>
-    <div class="display-block">
+    <div class="display-block" style="width: 1350px;">
 <?php
     if( $_POST['Cancel']!= 1 && $_SESSION['from']!="" && $_SESSION['to']!=""){
         echo <<<__HTML__
