@@ -1,7 +1,7 @@
 <?php
 include_once('config.php');
 
-function no_transfer($depart,$dest)
+function no_transfer($depart,$dest,$order,$method)
 {
     accessDB($db);
     $sql = <<<__SQL__
@@ -14,13 +14,14 @@ SELECT
     subtime( addtime( flight.arrival_date, dest.timezone ) , "12:00:00" )
         AS arrival_time,
     TIMEDIFF( flight.arrival_date, flight.departure_date) AS flight_time,
-    flight.ticket_price
+    flight.ticket_price AS price
 FROM flight
 JOIN airport AS depart ON flight.departure = depart.name
 JOIN airport AS dest ON flight.destination = dest.name
 WHERE flight.departure = ?
   AND flight.destination = ?
 __SQL__;
+    $sql .= " ORDER BY " . $order . $order_method;
     $sth = $db->prepare($sql);
     $result = $sth->execute(array($depart,$dest));
     #echo var_dump($sth);
@@ -49,7 +50,7 @@ __HTML__;
         echo '<td>' . $data->departure_time . '</td>';
         echo '<td>' . $data->arrival_time . '</td>';
         echo '<td>' . $data->flight_time . '</td>';
-        echo '<td>' . $data->ticket_price . '</td>';
+        echo '<td>' . $data->price . '</td>';
         echo '</tr>';
     }
     echo <<<__HTML__
@@ -57,7 +58,7 @@ __HTML__;
 __HTML__;
 }
 
-function one_transfer($depart,$dest)
+function one_transfer($depart,$dest,$order,$order_method)
 {
     accessDB($db);
     $sql =<<<__SQL__
@@ -81,7 +82,7 @@ case
       then one_second.arrival_date
   else
       one_first.arrival_date
-end AS arrive_time,
+end AS arrival_time,
 
 SUBTIME( ADDTIME(one_first.departure_date, one_first.depart_timezone), "12:00:00") AS one_first_departure_time,
 SUBTIME( ADDTIME(one_first.arrival_date, one_first.dest_timezone), "12:00:00") AS one_first_arrival_time,
@@ -188,6 +189,7 @@ OR
 (one_first.destination = one_second.departure AND one_second.destination = ? AND ADDTIME(one_first.arrival_date,"02:00:00") < one_second.departure_date)
 )
 __SQL__;
+    $sql .= " ORDER BY " . $order . $order_method;
     //$depart,$dest,$dest
     $sth = $db->prepare($sql);
     $result = $sth->execute(array($depart,$dest,$dest));
@@ -252,7 +254,7 @@ __HTML__;
 __HTML__;
 }
 
-function two_transfer($depart,$dest)
+function two_transfer($depart,$dest,$order,$order_method)
 {
     accessDB($db);
     $sql = <<<__SQL__
@@ -278,7 +280,7 @@ case
     then two_second.arrival_date
   else
         two_first.arrival_date
-end AS arrive_time,
+end AS arrival_time,
 
 SUBTIME( ADDTIME(two_first.departure_date, two_first.depart_timezone), "12:00:00") AS two_first_departure_time,
 SUBTIME( ADDTIME(two_first.arrival_date, two_first.dest_timezone), "12:00:00") AS two_first_arrival_time,
@@ -452,6 +454,7 @@ WHERE
     AND ADDTIME(two_first.arrival_date,"02:00:00") < two_second.departure_date
     AND ADDTIME(two_second.arrival_date,"02:00:00") < two_third.departure_date)
 __SQL__;
+    $sql .= " ORDER BY " . $order . $order_method;
     //$depart,$dest,$depart,$dest,$depart,$dest
     $sth = $db->prepare($sql);
     $result = $sth->execute(array($depart,$dest,$depart,$dest,$depart,$dest));
