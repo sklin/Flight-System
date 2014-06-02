@@ -14,7 +14,7 @@ include_once('config.php');
     $account_ID = $_SESSION['account_ID'];
     $edit_id = $_POST['edit_id'];
     $name = $_POST['name'];
-    $full_name = $_POST['full_name'];
+    $full_name = $_POST['Fullname'];
     $country_id = $_POST['Country'];
     $longitude = $_POST['longitude'];
     $latitude = $_POST['latitude'];

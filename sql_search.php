@@ -5,7 +5,7 @@ function css_inner_block()
 {
     echo <<<__HTML__
     .inner-block {
-        width: 670px;
+        width: 820;
     }
 __HTML__;
 }
@@ -15,14 +15,13 @@ function no_transfer($depart,$dest,$order,$method)
     accessDB($db);
     $sql = <<<__SQL__
 SELECT
+    flight.id,
     flight.flight_number,
     flight.departure,
     flight.destination,
-    subtime( addtime( flight.departure_date, depart.timezone ) , "12:00:00" )
-        AS departure_time,
-    subtime( addtime( flight.arrival_date, dest.timezone ) , "12:00:00" )
-        AS arrival_time,
-    TIMEDIFF( flight.arrival_date, flight.departure_date) AS flight_time,
+    flight.departure_date AS departure_time,
+    flight.arrival_date AS arrival_time,
+    TIMEDIFF( SUBTIME(flight.arrival_date,.dest.timezone), SUBTIME(flight.departure_date,depart.timezone)) AS flight_time,
     flight.ticket_price AS price
 FROM flight
 JOIN airport AS depart ON flight.departure = depart.name
@@ -39,14 +38,16 @@ __SQL__;
     echo <<<__HTML__
     <table class="table table-hover table-condensed">
     <tr>
-    <td>#</td>
-    <td>Flight Number</td>
-    <td>Departure Airport</td>
-    <td>Destination Airport</td>
-    <td>Departure Time</td>
-    <td>Arrival Time</td>
-    <td>Flight Time</td>
-    <td>Price</td>
+    <th>#</th>
+    <th>Flight Number</th>
+    <th>Departure Airport</th>
+    <th>Destination Airport</th>
+    <th>Departure Time</th>
+    <th>Arrival Time</th>
+    <th>Flight Time</th>
+    <th>Total Flight Time</th>
+    <th>Transfer Time</th>
+    <th>Price</th>
     </tr>
 __HTML__;
     $count = 0;
@@ -59,12 +60,15 @@ __HTML__;
         echo '<td>' . $data->departure_time . '</td>';
         echo '<td>' . $data->arrival_time . '</td>';
         echo '<td>' . $data->flight_time . '</td>';
+        echo '<td>' . $data->flight_time . '</td>';
+        echo '<td>' . 0 . '</td>';
         echo '<td>' . $data->price . '</td>';
         echo '</tr>';
     }
     echo <<<__HTML__
     </table>
 __HTML__;
+    return $sql;
 }
 
 function one_transfer($depart,$dest,$order,$order_method)
@@ -73,14 +77,17 @@ function one_transfer($depart,$dest,$order,$order_method)
     $sql =<<<__SQL__
 SELECT
 
+
 TIMEDIFF(
-  case
-    when one_second.flight_number IS NOT NULL
-        then one_second.arrival_date
-    else
-        one_first.arrival_date
-  end,
-  one_first.departure_date
+    case
+      when one_second.flight_number IS NOT NULL
+        then 
+            SUBTIME(one_second.arrival_date,one_second.dest_timezone)
+        else
+            SUBTIME(one_first.arrival_date,one_first.dest_timezone)
+    end
+    ,
+    SUBTIME(one_first.departure_date,one_first.depart_timezone)
 )
 AS total_time,
 
@@ -88,42 +95,52 @@ one_first.departure_date AS departure_time,
 
 case
   when one_second.flight_number IS NOT NULL
-      then one_second.arrival_date
+    then
+        one_second.arrival_date
   else
-      one_first.arrival_date
+        one_first.arrival_date
 end AS arrival_time,
 
-SUBTIME( ADDTIME(one_first.departure_date, one_first.depart_timezone), "12:00:00") AS one_first_departure_time,
-SUBTIME( ADDTIME(one_first.arrival_date, one_first.dest_timezone), "12:00:00") AS one_first_arrival_time,
-SUBTIME( ADDTIME(one_second.departure_date, one_second.depart_timezone), "12:00:00") AS one_second_departure_time,
-SUBTIME( ADDTIME(one_second.arrival_date, one_second.dest_timezone), "12:00:00") AS one_second_arrival_time,
+SUBTIME( one_first.departure_date, one_first.depart_timezone) AS one_first_departure_time,
+SUBTIME( one_first.arrival_date, one_first.dest_timezone) AS one_first_arrival_time,
+SUBTIME( one_second.departure_date, one_second.depart_timezone) AS one_second_departure_time,
+SUBTIME( one_second.arrival_date, one_second.dest_timezone) AS one_second_arrival_time,
 
-TIMEDIFF( one_first.arrival_date, one_first.departure_date) AS flight_time_1,
-TIMEDIFF( one_second.arrival_date, one_second.departure_date) AS flight_time_2,
+TIMEDIFF( SUBTIME( one_first.arrival_date, one_first.dest_timezone), SUBTIME( one_first.departure_date, one_first.depart_timezone)) AS flight_time_1,
+TIMEDIFF( SUBTIME( one_second.arrival_date, one_second.dest_timezone), SUBTIME( one_second.departure_date, one_second.depart_timezone)) AS flight_time_2,
 
 case
-  when TIMEDIFF( one_second.arrival_date, one_second.departure_date) IS NOT NULL
-      then
-            ADDTIME( TIMEDIFF( one_first.arrival_date, one_first.departure_date)
-                    , TIMEDIFF( one_second.arrival_date, one_second.departure_date)) 
-      else
-            TIMEDIFF( one_first.arrival_date, one_first.departure_date)
+  when one_second.flight_number IS NOT NULL
+    then
+        ADDTIME( 
+            TIMEDIFF( SUBTIME( one_first.arrival_date, one_first.dest_timezone),
+            SUBTIME( one_first.departure_date, one_first.depart_timezone)
+            )
+        ,
+            TIMEDIFF( SUBTIME( one_second.arrival_date, one_second.dest_timezone),
+            SUBTIME( one_second.departure_date, one_second.depart_timezone)
+            )
+        ) 
+    else
+        TIMEDIFF( SUBTIME( one_first.arrival_date, one_first.dest_timezone),
+                    SUBTIME( one_first.departure_date, one_first.depart_timezone)
+                )
 end AS flight_time,
 
 case
-  when TIMEDIFF( one_second.departure_date, one_first.arrival_date) IS NOT NULL
-      then
-            TIMEDIFF( one_second.departure_date, one_first.arrival_date)
-      else
-            "00:00:00"
+  when one_second.flight_number IS NOT NULL
+    then
+        TIMEDIFF( one_second.departure_date, one_first.arrival_date)
+    else
+        "00:00:00"
 end AS transfer_time,
 
 case
   when one_second.flight_number IS NOT NULL
-      then
-            round((one_first.ticket_price + one_second.ticket_price) * 0.9)
-      else
-            one_first.ticket_price
+    then
+        round((one_first.ticket_price + one_second.ticket_price) * 0.9)
+    else
+        one_first.ticket_price
 end AS price,
 
 one_first.id AS one_first_id,
@@ -195,7 +212,7 @@ WHERE one_first.departure = ?
 AND (
 (one_second.departure IS NULL AND one_first.destination = ?)
 OR
-(one_first.destination = one_second.departure AND one_second.destination = ? AND ADDTIME(one_first.arrival_date,"02:00:00") < one_second.departure_date)
+(one_first.destination = one_second.departure AND one_second.destination = ? AND ADDTIME(one_first.arrival_date,"02:00:00") <= one_second.departure_date)
 )
 __SQL__;
     $sql .= " ORDER BY " . $order . $order_method;
@@ -213,9 +230,10 @@ __SQL__;
                         <td style="width: 130px;">Destination Airport</td>
                         <td style="width: 150px;">Departure Time</td>
                         <td style="width: 150px;">Arrival Time</td>
+                        <td style="width: 120px;">Flight Time</td>
                     </table>
                 </td>
-                <td style="width: 120px;">Flight Time</td>
+                <td style="width: 120px;">Total Flight Time</td>
                 <td style="width: 120px;">Transfer Time</td>
                 <td style="width: 120px;">Total Time</td>
                 <td style="width: 120px;">Price</td>
@@ -233,13 +251,15 @@ __HTML__;
                 <tr><td style="width: 110px;">{$data->one_first_flight_number}</td>
                 <td style="width: 130px;">{$data->one_first_departure}</td>
                 <td style="width: 130px;">{$data->one_first_destination}</td>
-                <td style="width: 150px;">{$data->one_first_departure_time}</td>
-                <td style="width: 150px;">{$data->one_first_arrival_time}</td></tr>
+                <td style="width: 150px;">{$data->one_first_departure_date}</td>
+                <td style="width: 150px;">{$data->one_first_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_1}</td></tr>
                 <tr><td style="width: 110px;">{$data->one_second_flight_number}</td>
                 <td style="width: 130px;">{$data->one_second_departure}</td>
                 <td style="width: 130px;">{$data->one_second_destination}</td>
-                <td style="width: 150px;">{$data->one_second_departure_time}</td>
-                <td style="width: 150px;">{$data->one_second_arrival_time}</td></tr>
+                <td style="width: 150px;">{$data->one_second_departure_date}</td>
+                <td style="width: 150px;">{$data->one_second_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_2}</td></tr>
             </table>
             </td>
 __HTML__;
@@ -257,8 +277,9 @@ __HTML__;
                 echo '<td style="width: 110px;">' . $data->one_first_flight_number . '</td>';
                 echo '<td style="width: 130px;">' . $data->one_first_departure . '</td>';
                 echo '<td style="width: 130px;">' . $data->one_first_destination . '</td>';
-                echo '<td style="width: 150px;">' . $data->one_first_departure_time . '</td>';
-                echo '<td style="width: 150px;">' . $data->one_first_arrival_time . '</td>';
+                echo '<td style="width: 150px;">' . $data->one_first_departure_date . '</td>';
+                echo '<td style="width: 150px;">' . $data->one_first_arrival_date . '</td>';
+                echo '<td style="width: 150px;">' . $data->flight_time_1 . '</td>';
             echo '</table></td>';
             echo '<td style="width: 120px;">' . $data->flight_time . '</td>';
             echo '<td style="width: 120px;">' . $data->transfer_time . '</td>';
@@ -271,6 +292,7 @@ __HTML__;
     echo <<<__HTML__
     </table>
 __HTML__;
+    return $sql;
 }
 
 function two_transfer($depart,$dest,$order,$order_method)
@@ -278,59 +300,96 @@ function two_transfer($depart,$dest,$order,$order_method)
     accessDB($db);
     $sql = <<<__SQL__
 SELECT
+
 TIMEDIFF(
-  case
-    when (two_third.flight_number IS NOT NULL) AND (two_second.flight_number IS NOT NULL)
-        then two_third.arrival_date
-    when (two_third.flight_number IS NULL) AND (two_second.flight_number IS NOT NULL)
-        then two_second.arrival_date
-    else
-             two_first.arrival_date
-  end,
-  two_first.departure_date
+    case
+      when (two_third.flight_number IS NOT NULL) AND (two_second.flight_number IS NOT NULL)
+        then 
+            SUBTIME(two_third.arrival_date,two_third.dest_timezone)
+      when (two_third.flight_number IS NULL) AND (two_second.flight_number IS NOT NULL)
+        then
+            SUBTIME(two_second.arrival_date,two_second.dest_timezone)
+      else
+            SUBTIME(two_first.arrival_date,two_first.dest_timezone)
+    end
+    ,
+    SUBTIME(two_first.departure_date,two_first.depart_timezone)
 ) AS total_time,
 
 two_first.departure_date AS departure_time,
 
 case
   when (two_third.flight_number IS NOT NULL) AND (two_second.flight_number IS NOT NULL)
-    then two_third.arrival_date
+    then
+        two_third.arrival_date
   when (two_third.flight_number IS NULL) AND (two_second.flight_number IS NOT NULL)
-    then two_second.arrival_date
+    then
+        two_second.arrival_date
   else
         two_first.arrival_date
 end AS arrival_time,
 
-SUBTIME( ADDTIME(two_first.departure_date, two_first.depart_timezone), "12:00:00") AS two_first_departure_time,
-SUBTIME( ADDTIME(two_first.arrival_date, two_first.dest_timezone), "12:00:00") AS two_first_arrival_time,
-SUBTIME( ADDTIME(two_second.departure_date, two_second.depart_timezone), "12:00:00") AS two_second_departure_time,
-SUBTIME( ADDTIME(two_second.arrival_date, two_second.dest_timezone), "12:00:00") AS two_second_arrival_time,
-SUBTIME( ADDTIME(two_third.departure_date, two_third.depart_timezone), "12:00:00") AS two_third_departure_time,
-SUBTIME( ADDTIME(two_third.arrival_date, two_third.dest_timezone), "12:00:00") AS two_third_arrival_time,
+SUBTIME( two_first.departure_date, two_first.depart_timezone) AS two_first_departure_time,
+SUBTIME( two_first.arrival_date, two_first.dest_timezone) AS two_first_arrival_time,
+SUBTIME( two_second.departure_date, two_second.depart_timezone) AS two_second_departure_time,
+SUBTIME( two_second.arrival_date, two_second.dest_timezone) AS two_second_arrival_time,
+SUBTIME( two_third.departure_date, two_third.depart_timezone) AS two_third_departure_time,
+SUBTIME( two_third.arrival_date, two_third.dest_timezone) AS two_third_arrival_time,
 
-TIMEDIFF( two_first.arrival_date, two_first.departure_date) AS flight_time_1,
-TIMEDIFF( two_second.arrival_date, two_second.departure_date) AS flight_time_2,
-TIMEDIFF( two_third.arrival_date, two_third.departure_date) AS flight_time_3,
+TIMEDIFF( SUBTIME( two_first.arrival_date, two_first.dest_timezone), SUBTIME( two_first.departure_date, two_first.depart_timezone)) AS flight_time_1,
+TIMEDIFF( SUBTIME( two_second.arrival_date, two_second.dest_timezone), SUBTIME( two_second.departure_date, two_second.depart_timezone)) AS flight_time_2,
+TIMEDIFF( SUBTIME( two_third.arrival_date, two_third.dest_timezone), SUBTIME( two_third.departure_date, two_third.depart_timezone)) AS flight_time_3,
 
 case
-  when (TIMEDIFF( two_second.arrival_date, two_second.departure_date) IS NOT NULL) AND (TIMEDIFF( two_third.arrival_date, two_third.departure_date) IS NOT NULL)
+  when (two_third.flight_number IS NOT NULL) AND (two_second.flight_number IS NOT NULL)
     then
-        ADDTIME(ADDTIME( TIMEDIFF( two_first.arrival_date, two_first.departure_date)
-            , TIMEDIFF( two_second.arrival_date, two_second.departure_date)) 
-            , TIMEDIFF( two_third.arrival_date, two_third.departure_date))
-  when (TIMEDIFF( two_second.arrival_date, two_second.departure_date) IS NOT NULL) AND (TIMEDIFF( two_third.arrival_date, two_third.departure_date) IS NULL)
+        ADDTIME(
+            ADDTIME(
+                TIMEDIFF(
+                    SUBTIME( two_first.arrival_date, two_first.dest_timezone)
+                    ,
+                    SUBTIME( two_first.departure_date, two_first.depart_timezone)
+                )
+                ,
+                TIMEDIFF(
+                    SUBTIME( two_second.arrival_date, two_second.dest_timezone)
+                    ,
+                    SUBTIME( two_second.departure_date, two_second.depart_timezone)
+                )
+            )
+            ,
+            TIMEDIFF(
+                SUBTIME( two_third.arrival_date, two_third.dest_timezone)
+                ,
+                SUBTIME( two_third.departure_date, two_third.depart_timezone)
+            )
+        )
+  when (two_third.flight_number IS NULL) AND (two_second.flight_number IS NOT NULL)
     then
-        ADDTIME( TIMEDIFF( two_first.arrival_date, two_first.departure_date)
-            , TIMEDIFF( two_second.arrival_date, two_second.departure_date)) 
+        ADDTIME(
+            TIMEDIFF(
+                SUBTIME( two_first.arrival_date, two_first.dest_timezone)
+                ,
+                SUBTIME( two_first.departure_date, two_first.depart_timezone)
+            )
+        , TIMEDIFF(
+            SUBTIME( two_second.arrival_date, two_second.dest_timezone)
+            ,
+            SUBTIME( two_second.departure_date, two_second.depart_timezone)
+            )
+        )
   else
-        TIMEDIFF( two_first.arrival_date, two_first.departure_date)
+        TIMEDIFF(
+            SUBTIME( two_first.arrival_date, two_first.dest_timezone),
+            SUBTIME( two_first.departure_date, two_first.depart_timezone)
+        )
 end AS flight_time,
 
 case
-  when (TIMEDIFF( two_second.departure_date, two_first.arrival_date) IS NOT NULL) AND (TIMEDIFF( two_third.departure_date, two_second.arrival_date) IS NOT NULL)
+  when (two_third.flight_number IS NOT NULL) AND (two_second.flight_number IS NOT NULL)
     then
         ADDTIME(TIMEDIFF( two_second.departure_date, two_first.arrival_date) ,TIMEDIFF( two_third.departure_date, two_second.arrival_date))
-  when (TIMEDIFF( two_second.departure_date, two_first.arrival_date) IS NOT NULL) AND (TIMEDIFF( two_third.departure_date, two_second.arrival_date) IS NULL)
+  when (two_third.flight_number IS NULL) AND (two_second.flight_number IS NOT NULL)
     then
         TIMEDIFF( two_second.departure_date, two_first.arrival_date)
   else
@@ -347,6 +406,7 @@ case
   else
         two_first.ticket_price
 end AS price,
+
 
 two_first.id AS two_first_id,
 two_first.flight_number AS two_first_flight_number,
@@ -464,14 +524,15 @@ WHERE
     AND two_first.destination = two_second.departure
     AND two_second.destination = ?
     AND two_third.departure IS NULL
-    AND ADDTIME(two_first.arrival_date,"02:00:00") < two_second.departure_date)
+    AND ADDTIME(two_first.arrival_date,"02:00:00") <= two_second.departure_date)
   OR
     (two_first.departure = ?
     AND two_first.destination = two_second.departure
     AND two_second.destination = two_third.departure
+    AND two_second.destination <> two_first.departure
     AND two_third.destination = ?
-    AND ADDTIME(two_first.arrival_date,"02:00:00") < two_second.departure_date
-    AND ADDTIME(two_second.arrival_date,"02:00:00") < two_third.departure_date)
+    AND ADDTIME(two_first.arrival_date,"02:00:00") <= two_second.departure_date
+    AND ADDTIME(two_second.arrival_date,"02:00:00") <= two_third.departure_date)
 __SQL__;
     $sql .= " ORDER BY " . $order . $order_method;
     //$depart,$dest,$depart,$dest,$depart,$dest
@@ -488,15 +549,18 @@ __SQL__;
             <td style="width: 130px;">Destination Airport</td>
             <td style="width: 150px;">Departure Time</td>
             <td style="width: 150px;">Arrival Time</td>
+            <td style="width: 150px;">Flight Time</td>
         </table>
     </td>
-    <td style="width: 120px;">Flight Time</td>
+    <td style="width: 120px;">Total Flight Time</td>
     <td style="width: 120px;">Transfer Time</td>
     <td style="width: 120px;">Total Time</td>
     <td style="width: 120px;">Price</td>
     </tr>
 __HTML__;
     $count = 0;
+    #echo "QQQQQ".var_dump($result);
+    #echo var_dump($sth->errorInfo());
     while($data=$sth->fetchObject()){
         if($data->two_second_flight_number !== NULL && $data->two_third_flight_number !== NULL){
             echo '<tr>';
@@ -507,18 +571,21 @@ __HTML__;
                 <tr><td style="width: 110px;">{$data->two_first_flight_number}</td>
                 <td style="width: 130px;">{$data->two_first_departure}</td>
                 <td style="width: 130px;">{$data->two_first_destination}</td>
-                <td style="width: 150px;">{$data->two_first_departure_time}</td>
-                <td style="width: 150px;">{$data->two_first_arrival_time}</td></tr>
+                <td style="width: 150px;">{$data->two_first_departure_date}</td>
+                <td style="width: 150px;">{$data->two_first_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_1}</td></tr>
                 <td style="width: 110px;">{$data->two_second_flight_number}</td>
                 <td style="width: 130px;">{$data->two_second_departure}</td>
                 <td style="width: 130px;">{$data->two_second_destination}</td>
-                <td style="width: 150px;">{$data->two_second_departure_time}</td>
-                <td style="width: 150px;">{$data->two_second_arrival_time}</td>
+                <td style="width: 150px;">{$data->two_second_departure_date}</td>
+                <td style="width: 150px;">{$data->two_second_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_2}</td></tr>
                 <tr><td style="width: 110px;">{$data->two_third_flight_number}</td>
                 <td style="width: 130px;">{$data->two_third_departure}</td>
                 <td style="width: 130px;">{$data->two_third_destination}</td>
-                <td style="width: 150px;">{$data->two_third_departure_time}</td>
-                <td style="width: 150px;">{$data->two_third_arrival_time}</td></tr>
+                <td style="width: 150px;">{$data->two_third_departure_date}</td>
+                <td style="width: 150px;">{$data->two_third_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_3}</td></tr>
             </table>
             </td>
 __HTML__;
@@ -537,13 +604,15 @@ __HTML__;
                 <tr><td style="width: 110px;">{$data->two_first_flight_number}</td>
                 <td style="width: 130px;">{$data->two_first_departure}</td>
                 <td style="width: 130px;">{$data->two_first_destination}</td>
-                <td style="width: 150px;">{$data->two_first_departure_time}</td>
-                <td style="width: 150px;">{$data->two_first_arrival_time}</td></tr>
+                <td style="width: 150px;">{$data->two_first_departure_date}</td>
+                <td style="width: 150px;">{$data->two_first_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_1}</td></tr>
                 <td style="width: 110px;">{$data->two_second_flight_number}</td>
                 <td style="width: 130px;">{$data->two_second_departure}</td>
                 <td style="width: 130px;">{$data->two_second_destination}</td>
-                <td style="width: 150px;">{$data->two_second_departure_time}</td>
-                <td style="width: 150px;">{$data->two_second_arrival_time}</td></tr>
+                <td style="width: 150px;">{$data->two_second_departure_date}</td>
+                <td style="width: 150px;">{$data->two_second_arrival_date}</td>
+                <td style="width: 150px;">{$data->flight_time_2}</td></tr>
             </table>
             </td>
 __HTML__;
@@ -561,8 +630,9 @@ __HTML__;
                 echo '<td style="width: 100px;">' . $data->two_first_flight_number . '</td>';
                 echo '<td style="width: 120px;">' . $data->two_first_departure . '</td>';
                 echo '<td style="width: 120px;">' . $data->two_first_destination . '</td>';
-                echo '<td style="width: 140px;">' . $data->two_first_departure_time . '</td>';
-                echo '<td style="width: 140px;">' . $data->two_first_arrival_time . '</td>';
+                echo '<td style="width: 140px;">' . $data->two_first_departure_date . '</td>';
+                echo '<td style="width: 140px;">' . $data->two_first_arrival_date . '</td>';
+                echo '<td style="width: 140px;">' . $data->flight_time_1 . '</td>';
                 #echo '<td style="width: 110px;">' . $data->two_first_flight_number . '</td>';
                 #echo '<td style="width: 130px;">' . $data->two_first_departure . '</td>';
                 #echo '<td style="width: 130px;">' . $data->two_first_destination . '</td>';
@@ -581,6 +651,7 @@ __HTML__;
     echo <<<__HTML__
     </table>
 __HTML__;
+    return $sql;
 }
 
 ?>

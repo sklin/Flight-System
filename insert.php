@@ -36,8 +36,8 @@
         $flight_number = $_POST['flight_number'];
         $departure = $_POST['departure'];
         $destination = $_POST['destination'];
-        $departure_date = $_POST['departure_date'];
-        $arrival_date = $_POST['arrival_date'];
+        $departure_time = $_POST['departure_time'];
+        $arrival_time = $_POST['arrival_time'];
         $ticket_price = $_POST['ticket_price'];
         if(str_replace(" ","",$flight_number)===""){
             $_SESSION['Insert_Error'] = "Flight Number cannot be empty!";
@@ -54,12 +54,12 @@
             header("Location: main.php");
             exit();
         }
-        else if(str_replace(" ","",$departure_date)===""){
+        else if(str_replace(" ","",$departure_time)===""){
             $_SESSION['Insert_Error'] = "Departure Date cannot be empty!";
             header("Location: main.php");
             exit();
         }
-        else if(str_replace(" ","",$arrival_date)===""){
+        else if(str_replace(" ","",$arrival_time)===""){
             $_SESSION['Insert_Error'] = "Arrival Date cannot be empty!";
             header("Location: main.php");
             exit();
@@ -81,7 +81,7 @@
                  . " VALUES(?, ?, ?, ?, ?, ?)";
             $sth = $db->prepare($sql);
             $result = $sth->execute(
-                array($flight_number,$departure,$destination,$departure_date,$arrival_date,$ticket_price)
+                array($flight_number,$departure,$destination,$departure_time,$arrival_time,$ticket_price)
                 );
             
             if($result){

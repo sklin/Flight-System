@@ -21,7 +21,15 @@ include_once('config.php');
         $_SESSION['order_method'] = $_POST['order_method'];
     }
     if($_POST['search']!=""){
-        $_SESSION['search'] = $_POST['search'];
+
+        if($_POST['search']=="airport_id")
+            $_SESSION['search'] = "airport.id";
+        else if($_POST['search']=="Airport_name")
+            $_SESSION['search'] = "airport.name";
+        else if($_POST['search']=="Fullname")
+            $_SESSION['search'] = "airport.full_name";
+        else
+            $_SESSION['search'] = $_POST['search'];
     }
     if($_POST['keyword']!=""){
         $_SESSION['keyword'] = $_POST['keyword'];
@@ -103,17 +111,23 @@ include_once('config.php');
     <form method="POST" action="airport.php">
     <select name="order">
         <?php
-            if($_SESSION['order']==="id"){
-                echo '<option value="id" selected>ID</option>';
+            if($_SESSION['order']==="airport_id"){
+                echo '<option value="airport_id" selected>ID</option>';
             }
             else{
-                echo '<option value="id">ID</option>';
+                echo '<option value="airport_id">ID</option>';
             }
-            if($_SESSION['order']==="name"){
-                echo '<option value="name" selected>Name</option>';
+            if($_SESSION['order']==="Airport_name"){
+                echo '<option value="Airport_name" selected>Name</option>';
             }
             else{
-                echo '<option value="name">Name</option>';
+                echo '<option value="Airport_name">Name</option>';
+            }
+            if($_SESSION['order']==="Fullname"){
+                echo '<option value="Fullname" selected>Full Name</option>';
+            }
+            else{
+                echo '<option value="Fullname">Full Name</option>';
             }
             if($_SESSION['order']==="longitude"){
                 echo '<option value="longitude" selected>Longitude</option>';
@@ -126,6 +140,12 @@ include_once('config.php');
             }
             else{
                 echo '<option value="latitude">Latitude</option>';
+            }
+            if($_SESSION['order']==="timezone"){
+                echo '<option value="timezone" selected>Timezone</option>';
+            }
+            else{
+                echo '<option value="timezone">Timezone</option>';
             }
         ?>
     </select>
@@ -150,17 +170,23 @@ include_once('config.php');
     <form method="POST" action="airport.php">
     <select name="search">
         <?php
-            if($_SESSION['search']==="id"){
-                echo '<option value="id" selected>ID</option>';
+            if($_SESSION['search']==="airport_id"){
+                echo '<option value="airport_id" selected>ID</option>';
             }
             else{
-                echo '<option value="id">ID</option>';
+                echo '<option value="airport_id">ID</option>';
             }
-            if($_SESSION['search']==="name"){
-                echo '<option value="name" selected>Name</option>';
+            if($_SESSION['search']==="Airport_name"){
+                echo '<option value="Airport_name" selected>Name</option>';
             }
             else{
-                echo '<option value="name">Name</option>';
+                echo '<option value="Airport_name">Name</option>';
+            }
+            if($_SESSION['search']==="Fullname"){
+                echo '<option value="Fullname" selected>Full Name</option>';
+            }
+            else{
+                echo '<option value="Fullname">Full Name</option>';
             }
             if($_SESSION['search']==="longitude"){
                 echo '<option value="longitude" selected>Longitude</option>';
@@ -201,10 +227,10 @@ include_once('config.php');
         </tr>
 <?php
     if($_SESSION['order']!=""){
-        $order = " airport.".$_SESSION['order'];
+        $order = " ".$_SESSION['order'];
     }
     else{
-        $order = " id";
+        $order = " airport.id";
     }
     if($_SESSION['order_method']!=""){
         $order_method = " ".$_SESSION['order_method'];
@@ -213,7 +239,7 @@ include_once('config.php');
         $order_method = " ASC";
     }
     if($_SESSION['keyword']!=""){
-        $keyword = "'%".$_SESSION['keyword']."%' ";
+            $keyword = "'%".$_SESSION['keyword']."%' ";
     }
     accessDB($db);
     if($db){
@@ -224,43 +250,44 @@ include_once('config.php');
             #        ."FROM `airport` "
             #        ."WHERE ". $_SESSION['search'] ." LIKE '" . $keyword . "' "
             #        ."ORDER BY " . $order . $order_method;
-            $sql = "SELECT airport.id, airport.name AS Airport_name, airport.full_name,"
+            $sql = "SELECT airport.id AS airport_id, airport.name AS Airport_name, airport.full_name AS Fullname,"
                     ."country.name AS Country, airport.longitude, airport.latitude, airport.timezone "
                     ."FROM airport "
-                    ."JOIN country ON airport.country_id = country.id";
-                    #."WHERE ". $_SESSION['search'] ." LIKE " . $keyword
-                    #."ORDER BY " . $order . $order_method;
+                    ."JOIN country ON airport.country_id = country.id "
+                    ."WHERE ". $_SESSION['search'] ." LIKE " . $keyword
+                    ."ORDER BY " . $order . $order_method;
             $sth = $db->prepare($sql);
             $result = $sth->execute();
         }
         else{
             #$sql = "SELECT * FROM `airport` ORDER BY " . $order . $order_method;
-            $sql = "SELECT airport.id, airport.name AS Airport_name, airport.full_name, "
+            $sql = "SELECT airport.id AS airport_id, airport.name AS Airport_name, airport.full_name AS Fullname, "
                     ."country.name AS Country, airport.longitude, airport.latitude, airport.timezone "
                     ."FROM airport "
-                    ."JOIN country ON airport.country_id = country.id";
-                    #."ORDER BY " . $order . $order_method;
+                    ."JOIN country ON airport.country_id = country.id "
+                    ."ORDER BY " . $order . $order_method;
             $sth = $db->prepare($sql);
             $result = $sth->execute();
         }
     }
     echo "\n";
     #echo var_dump($result);
+    #echo var_dump($sth);
     #echo var_dump($sth->errorInfo());
     while ($data = $sth->fetchObject()){
         echo "<tr>\n";
         #echo '<form action="edit_airport.php" method="post">';
         #echo "<br>".var_dump($data)."</br>";
         echo "<td>";
-        echo $data->id;
+        echo $data->airport_id;
         echo "</td>\n";
         
         ### name
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<form action="edit_airport.php" method="post">';
         }
         echo "<td>";
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<input type="text" name="name" value="'.$data->Airport_name.'"></input>';
         }
         else{
@@ -269,24 +296,24 @@ include_once('config.php');
         echo "</td>\n";
 
         ### full_name
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<form action="edit_airport.php" method="post">';
         }
         echo "<td>";
-        if($edit_id==$data->id){
-            echo '<input type="text" name="full_name" value="'.$data->full_name.'"></input>';
+        if($edit_id==$data->airport_id){
+            echo '<input type="text" name="Fullname" value="'.$data->Fullname.'"></input>';
         }
         else{
-            echo $data->full_name;
+            echo $data->Fullname;
         }
         echo "</td>\n";
 
         ### Country
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<form action="edit_airport.php" method="post">';
         }
         echo "<td>";
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<select name="Country">';
             $sql2 = "SELECT * "
                     ."FROM country ";
@@ -308,7 +335,7 @@ include_once('config.php');
 
         ### longitude
         echo "<td>";
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<input type="number" name="longitude" step=0.00001 min=-180 max=180 placeholder="Longitude" value="'.$data->longitude.'"></input>';
         }
         else{
@@ -318,7 +345,7 @@ include_once('config.php');
         
         ### latitude
         echo "<td>";
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<input type="number" name="latitude" step=0.00001 min=-90 max=90 placeholder="Latitude" value="'.$data->latitude.'"></input>';
         }
         else{
@@ -327,11 +354,11 @@ include_once('config.php');
         echo "</td>\n";
 
         ### timezone
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '<form action="edit_airport.php" method="post">';
         }
         echo "<td>";
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             #echo '<input type="text" name="timezone" value="'.$data->timezone.'"></input>';
                 echo '<select name="timezone">';
                 echo '<option value="0:00">-12</option>';
@@ -371,22 +398,22 @@ include_once('config.php');
         echo "</td>\n";
 
         echo "<td>";
-        if($edit_id==$data->id){
-            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Comfirm</button>';
+        if($edit_id==$data->airport_id){
+            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->airport_id.'>Comfirm</button>';
         }
         else{
             echo '<form action="airport.php" method="post">';
-            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->id.'>Edit</button>';
+            echo '<button class="btn btn-info" type="submit" name="edit_id" value='.$data->airport_id.'>Edit</button>';
             echo '</form>';
         }
-        if($edit_id==$data->id){
+        if($edit_id==$data->airport_id){
             echo '</form>';
         }
         echo "</td>\n";
         
         echo '<td>';
         echo '<form action="rm_airport.php" method="post">';
-        echo '<button class="btn btn-danger" type="submit" name="delete" value="'.$data->id.'">Delete</button>';
+        echo '<button class="btn btn-danger" type="submit" name="delete" value="'.$data->airport_id.'">Delete</button>';
         echo '</form>';
         echo "</td>\n";
         

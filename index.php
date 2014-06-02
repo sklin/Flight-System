@@ -60,6 +60,15 @@
     <!-- Bootstrap -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="jquery-2.1.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#sql-flip").click(function(){
+                $("#sql-toggle").fadeToggle();
+            });
+        });
+    </script>
+
     <style type=text/css>
         body {
             padding-top: 20px;
@@ -77,12 +86,32 @@
             padding-top: 10px;
             padding-left: 50px;
         }
+        .Link{
+            font-size: 20px;
+            position: absolute;
+            left: 90%;
+            padding-right: 50px;
+        }
+
+        #sql-toggle,#sql-flip
+        {
+        padding:5px;
+        text-align:center;
+        background-color:#e5eecc;
+        border:solid 1px #c3c3c3;
+        }
+        #sql-toggle
+        {
+        padding:50px;
+        display:none;
+        }
         <?php
             css_inner_block();
         ?>
     </style>
 </head>
 <body>
+    <h5 class="Link"><a href="login.php">Login</a></h5>
     <h1>Flight System</h1>
     <div class="input-block">
     <form action="index.php" method="POST">
@@ -201,12 +230,33 @@ __HTML__;
             </form>
         </div>
 __HTML__;
-        if($_SESSION['transfer-times']==0)
-            no_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
-        else if($_SESSION['transfer-times']==1)
-            one_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
-        else if($_SESSION['transfer-times']==2)
-            two_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+        if($_SESSION['transfer-times']==0){
+            $show_sql =  no_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+            echo <<<__HTML__
+            <div id="sql-flip">Show SQL></div>
+            <div id="sql-toggle">
+                {$show_sql}
+            </div>
+__HTML__;
+        }
+        else if($_SESSION['transfer-times']==1){
+            $show_sql = one_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+            echo <<<__HTML__
+            <div id="sql-flip">Show SQL></div>
+            <div id="sql-toggle">
+                {$show_sql}
+            </div>
+__HTML__;
+        }
+        else if($_SESSION['transfer-times']==2){
+            $show_sql = two_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+            echo <<<__HTML__
+            <div id="sql-flip">Show SQL></div>
+            <div id="sql-toggle">
+                {$show_sql}
+            </div>
+__HTML__;
+        }
     }
 ?>
     <?php   //Debug
@@ -230,8 +280,10 @@ __HTML__;
     ?>
     </div>
 
+
     <script src="jquery.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
         
 </body>
 </html>
+

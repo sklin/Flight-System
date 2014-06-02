@@ -116,17 +116,17 @@ include_once('config.php');
         else{
             echo '<option value="destination">Destination</option>';
         }
-        if($_SESSION['user_order']==="departure_date"){
-            echo '<option value="departure_date" selected>Departure Date</option>';
+        if($_SESSION['user_order']==="departure_time"){
+            echo '<option value="departure_time" selected>Departure Date</option>';
         }
         else{
-            echo '<option value="departure_date">Departure Date</option>';
+            echo '<option value="departure_time">Departure Date</option>';
         }
-        if($_SESSION['user_order']==="arrival_date"){
-            echo '<option value="arrival_date" selected>Arrival Date</option>';
+        if($_SESSION['user_order']==="arrival_time"){
+            echo '<option value="arrival_time" selected>Arrival Date</option>';
         }
         else{
-            echo '<option value="arrival_date">Arrival Date</option>';
+            echo '<option value="arrival_time">Arrival Date</option>';
         }
         if($_SESSION['user_order']==="ticket_price"){
             echo '<option value="ticket_price" selected>Ticket Price</option>';
@@ -181,17 +181,17 @@ include_once('config.php');
             else{
                 echo '<option value="destination">Destination</option>';
             }
-            if($_SESSION['user_search']==="departure_date"){
-                echo '<option value="departure_date" selected>Departure Date</option>';
+            if($_SESSION['user_search']==="departure_time"){
+                echo '<option value="departure_time" selected>Departure Date</option>';
             }
             else{
-                echo '<option value="departure_date">Departure Date</option>';
+                echo '<option value="departure_time">Departure Date</option>';
             }
-            if($_SESSION['user_search']==="arrival_date"){
-                echo '<option value="arrival_date" selected>Arrival Date</option>';
+            if($_SESSION['user_search']==="arrival_time"){
+                echo '<option value="arrival_time" selected>Arrival Date</option>';
             }
             else{
-                echo '<option value="arrival_date">Arrival Date</option>';
+                echo '<option value="arrival_time">Arrival Date</option>';
             }
             if($_SESSION['user_search']==="ticket_price"){
                 echo '<option value="ticket_price" selected>Ticket Price</option>';
@@ -246,14 +246,41 @@ include_once('config.php');
     }
     
     if($_SESSION['user_keyword']!=""){
-        $sql = "SELECT * FROM `flight` "
-                ."WHERE ". $_SESSION['user_search'] ." LIKE '" . $keyword . "' "
+        $sql = <<<__SQL__
+SELECT
+    flight.id,
+    flight.flight_number,
+    flight.departure,
+    flight.destination,
+    ADDTIME(SUBTIME(flight.departure_date,"12:00:00"),depart.timezone) AS departure_time,
+    ADDTIME(SUBTIME(flight.arrival_date,"12:00:00"),dest.timezone) AS arrival_time,
+    flight.ticket_price
+
+FROM flight
+JOIN airport AS depart ON depart.name = flight.departure
+JOIN airport AS dest ON dest.name = flight.destination
+__SQL__;
+        $sql .= " WHERE ". $_SESSION['user_search'] ." LIKE '" . $keyword . "' "
                 ."ORDER BY " . $order . $order_method . ", flight_number ";
         $sth = $db->prepare($sql);
         $result = $sth->execute(array($_SESSION['account_ID']));
     }
     else{
-        $sql = "SELECT * FROM `flight` ORDER BY " . $order . $order_method . ", flight_number ";
+        $sql = <<<__SQL__
+SELECT
+    flight.id,
+    flight.flight_number,
+    flight.departure,
+    flight.destination,
+    flight.departure_date AS departure_time,
+    flight.arrival_date AS arrival_time,
+    flight.ticket_price
+
+FROM flight
+JOIN airport AS depart ON depart.name = flight.departure
+JOIN airport AS dest ON dest.name = flight.destination
+__SQL__;
+        $sql .= " ORDER BY " . $order . $order_method . ", flight_number ";
         $sth = $db->prepare($sql);
         $result = $sth->execute();
 
@@ -264,8 +291,8 @@ include_once('config.php');
         echo "<td>".$data->flight_number."</td>";
         echo "<td>".$data->departure."</td>";
         echo "<td>".$data->destination."</td>";
-        echo "<td>".$data->departure_date."</td>";
-        echo "<td>".$data->arrival_date."</td>";
+        echo "<td>".$data->departure_time."</td>";
+        echo "<td>".$data->arrival_time."</td>";
         echo "<td>".$data->ticket_price."</td>";
         echo '<td>';
         $sql2 = "SELECT `id` FROM `compare` "
