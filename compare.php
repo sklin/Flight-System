@@ -87,6 +87,7 @@
             echo '<li><a href="country.php"><i class="icon-globe"></i> Country List</a></li>';
         }
     ?>
+        <li><a href="ticket_search.php"><i class="icon-ok-circle"></i> Ticket Search</a></li>
         <li class="active"><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
     </ul>
     <form method="POST" action="compare.php">
@@ -342,6 +343,174 @@
         echo '</td>';
         
         echo "</tr>";
+    }
+?>
+        </table>
+
+        <table class="MainTable table-bordered table table-hover table-condensed" border="1">
+            <tr>
+            <th>Flight Number</th>
+            <th>Departure Airport</th>
+            <th>Destination Airport</th>
+            <th>Departure Time</th>
+            <th>Arrival Time</th>
+            <th>Price</th>
+            <th>Remove</th>
+            </tr>
+<?php
+    $sql = <<<__SQL__
+    SELECT DISTINCT
+    flight_1.id AS flight_1_id,
+    flight_1.flight_number AS flight_1_flight_number,
+    flight_1.departure AS flight_1_departure,
+    flight_1.destination AS flight_1_destination,
+    flight_1.departure_date AS flight_1_departure_date,
+    flight_1.arrival_date AS flight_1_arrival_date,
+
+    flight_1.ticket_price
+        AS total_price
+
+    FROM ticket_favorate
+    JOIN flight AS flight_1 ON flight_1.id = ticket_favorate.flight_id_1
+    WHERE ticket_favorate.user_id = ? AND ticket_favorate.flight_id_2 IS NULL AND ticket_favorate.flight_id_3 IS NULL
+__SQL__;
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID));
+    while($data = $sth->fetchObject()){
+        echo <<<__HTML__
+        <tr>
+            <td>{$data->flight_1_flight_number}</td>
+            <td>{$data->flight_1_departure}</td>
+            <td>{$data->flight_1_destination}</td>
+            <td>{$data->flight_1_departure_date}</td>
+            <td>{$data->flight_1_arrival_date}</td>
+            <td>{$data->total_price}</td>
+            <td>
+                <form action="rm_ticket_favorate.php" method="POST">
+                    <input name="flight_id_1" value="{$data->flight_1_id}" hidden />
+                    <input name="flight_id_2" value="" hidden />
+                    <input name="flight_id_3" value="" hidden />
+                    <button type=submit class="btn btn-success" >Remove</button>
+                </form>
+            </td>
+
+        </tr>
+__HTML__;
+        
+    }
+
+
+    $sql = <<<__SQL__
+    SELECT DISTINCT
+    flight_1.id AS flight_1_id,
+    flight_1.flight_number AS flight_1_flight_number,
+    flight_1.departure AS flight_1_departure,
+    flight_1.destination AS flight_1_destination,
+    flight_1.departure_date AS flight_1_departure_date,
+    flight_1.arrival_date AS flight_1_arrival_date,
+
+    flight_2.id AS flight_2_id,
+    flight_2.flight_number AS flight_2_flight_number,
+    flight_2.departure AS flight_2_departure,
+    flight_2.destination AS flight_2_destination,
+    flight_2.departure_date AS flight_2_departure_date,
+    flight_2.arrival_date AS flight_2_arrival_date,
+    
+
+    ((flight_1.ticket_price + flight_2.ticket_price) * 0.9)
+        AS total_price
+
+    FROM ticket_favorate
+    JOIN flight AS flight_1 ON flight_1.id = ticket_favorate.flight_id_1
+    JOIN flight AS flight_2 ON flight_2.id = ticket_favorate.flight_id_2
+    WHERE ticket_favorate.user_id = ? AND ticket_favorate.flight_id_3 IS NULL
+__SQL__;
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID));
+    while($data = $sth->fetchObject()){
+        echo <<<__HTML__
+        <tr>
+            <td>{$data->flight_1_flight_number}<br>{$data->flight_2_flight_number}</td>
+            <td>{$data->flight_1_departure}<br>{$data->flight_2_departure}</td>
+            <td>{$data->flight_1_destination}<br>{$data->flight_2_destination}</td>
+            <td>{$data->flight_1_departure_date}<br>{$data->flight_2_departure_date}</td>
+            <td>{$data->flight_1_arrival_date}<br>{$data->flight_2_arrival_date}</td>
+            <td>{$data->total_price}</td>
+            <td>
+                <form action="rm_ticket_favorate.php" method="POST">
+                    <input name="flight_id_1" value="{$data->flight_1_id}" hidden />
+                    <input name="flight_id_2" value="{$data->flight_2_id}" hidden />
+                    <input name="flight_id_3" value="" hidden />
+                    <button type=submit class="btn btn-success" >Remove</button>
+                </form>
+            </td>
+        </tr>
+__HTML__;
+        
+    }
+
+
+
+    $sql = <<<__SQL__
+    SELECT DISTINCT
+    flight_1.id AS flight_1_id,
+    flight_1.flight_number AS flight_1_flight_number,
+    flight_1.departure AS flight_1_departure,
+    flight_1.destination AS flight_1_destination,
+    flight_1.departure_date AS flight_1_departure_date,
+    flight_1.arrival_date AS flight_1_arrival_date,
+
+    flight_2.id AS flight_2_id,
+    flight_2.flight_number AS flight_2_flight_number,
+    flight_2.departure AS flight_2_departure,
+    flight_2.destination AS flight_2_destination,
+    flight_2.departure_date AS flight_2_departure_date,
+    flight_2.arrival_date AS flight_2_arrival_date,
+    
+    flight_3.id AS flight_3_id,
+    flight_3.flight_number AS flight_3_flight_number,
+    flight_3.departure AS flight_3_departure,
+    flight_3.destination AS flight_3_destination,
+    flight_3.departure_date AS flight_3_departure_date,
+    flight_3.arrival_date AS flight_3_arrival_date,
+
+    case
+      when flight_2.ticket_price IS NOT NULL AND flight_3.ticket_price IS NOT NULL then
+        ((flight_1.ticket_price + flight_2.ticket_price + flight_3.ticket_price) * 0.8)
+      when flight_2.ticket_price IS NOT NULL AND flight_3.ticket_price IS  NULL then
+        ((flight_1.ticket_price + flight_2.ticket_price) * 0.9)
+      else
+        flight_1.ticket_price
+    end AS total_price
+
+    FROM ticket_favorate
+    JOIN flight AS flight_1 ON flight_1.id = ticket_favorate.flight_id_1
+    JOIN flight AS flight_2 ON flight_2.id = ticket_favorate.flight_id_2
+    JOIN flight AS flight_3 ON flight_3.id = ticket_favorate.flight_id_3
+    WHERE ticket_favorate.user_id = ?
+__SQL__;
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID));
+    while($data = $sth->fetchObject()){
+        echo <<<__HTML__
+        <tr>
+            <td>{$data->flight_1_flight_number}<br>{$data->flight_2_flight_number}<br>{$data->flight_3_flight_number}</td>
+            <td>{$data->flight_1_departure}<br>{$data->flight_2_departure}<br>{$data->flight_3_departure}</td>
+            <td>{$data->flight_1_destination}<br>{$data->flight_2_destination}<br>{$data->flight_3_destination}</td>
+            <td>{$data->flight_1_departure_date}<br>{$data->flight_2_departure_date}<br>{$data->flight_3_departure_date}</td>
+            <td>{$data->flight_1_arrival_date}<br>{$data->flight_2_arrival_date}<br>{$data->flight_3_arrival_date}</td>
+            <td>{$data->total_price}</td>
+            <td>
+                <form action="rm_ticket_favorate.php" method="POST">
+                    <input name="flight_id_1" value="{$data->flight_1_id}" hidden />
+                    <input name="flight_id_2" value="{$data->flight_2_id}" hidden />
+                    <input name="flight_id_3" value="{$data->flight_3_id}" hidden />
+                    <button type=submit class="btn btn-success" >Remove</button>
+                </form>
+            </td>
+        </tr>
+__HTML__;
+        
     }
 ?>
         </table>

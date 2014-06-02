@@ -3,10 +3,23 @@
     session_start();
     #header("Location: login.php");
     include_once('config.php');
-    include_once('sql_search.php');
+    include_once('user_sql_search.php');
     accessDB($db);
-    if($_SESSION['account']){
-        header("Location: main.php");
+    if(!$_SESSION['account']){
+        header("Location: index.php");
+        exit();
+    }
+?>
+<?php
+    $account = $_SESSION['account'];
+    $account_ID = $_SESSION['account_ID'];
+    accessDB($db);
+    $sql = "SELECT id, account FROM `user`"
+         . " WHERE `id` = ? AND `account` = ?";
+    $sth = $db->prepare($sql);
+    $result = $sth->execute(array($account_ID,$account));
+    if(!$sth->fetchObject()){
+        header("Location: logout.php");
         exit();
     }
 ?>
@@ -96,6 +109,12 @@
             left: 90%;
             padding-right: 50px;
         }
+        .Logout{
+            font-size: 20px;
+            position: absolute;
+            left: 90%;
+            padding-right: 50px;
+        }
 
         #sql-toggle,#sql-flip
         {
@@ -115,10 +134,23 @@
     </style>
 </head>
 <body>
-    <h5 class="Link"><a href="login.php">Login</a></h5>
+    <h5 class="Logout"><a href="logout.php">logout</a></h5>
     <h1>Flight System</h1>
+    <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
+    <ul class="nav nav-tabs">
+        <li><a href="main.php"><i class="icon-home"></i> Home</a></li>
+    <?php
+        if($_SESSION['is_admin']==1){
+            echo '<li><a href="authority.php"><i class="icon-user"></i> User List</a></li>';
+            echo '<li><a href="airport.php"><i class="icon-plane"></i> Airport List</a></li>';
+            echo '<li><a href="country.php"><i class="icon-globe"></i> Country List</a></li>';
+        }
+    ?>
+            <li class="active"><a href="ticket_search.php"><i class="icon-ok-circle"></i> Ticket Search</a></li>
+        <li><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
+    </ul>
     <div class="input-block">
-    <form action="index.php" method="POST">
+    <form action="ticket_search.php" method="POST">
         <h3 style="display:inline-block;">From :</h3>
         <select name="from">
             <option disabled selected>Choose an airport</option>
@@ -210,7 +242,7 @@ __HTML__;
     if( $_POST['Cancel']!= 1 && $_SESSION['from']!="" && $_SESSION['to']!=""){
         echo <<<__HTML__
         <div id="order">
-            <form method="POST" action="index.php">
+            <form method="POST" action="ticket_search.php">
                 <h3>Order by :</h3>
                 <select name="order">
                     <option value="price">Price</option>
@@ -235,7 +267,7 @@ __HTML__;
         </div>
 __HTML__;
         if($_SESSION['transfer-times']==0){
-            $show_sql =  no_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+            $show_sql =  no_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method,$account_ID);
             echo <<<__HTML__
             <div id="sql-flip">Show SQL></div>
             <div id="sql-toggle">
@@ -244,7 +276,7 @@ __HTML__;
 __HTML__;
         }
         else if($_SESSION['transfer-times']==1){
-            $show_sql = one_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+            $show_sql = one_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method,$account_ID);
             echo <<<__HTML__
             <div id="sql-flip">Show SQL></div>
             <div id="sql-toggle">
@@ -253,7 +285,7 @@ __HTML__;
 __HTML__;
         }
         else if($_SESSION['transfer-times']==2){
-            $show_sql = two_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method);
+            $show_sql = two_transfer($_SESSION['from'],$_SESSION['to'],$order,$order_method,$account_ID);
             echo <<<__HTML__
             <div id="sql-flip">Show SQL></div>
             <div id="sql-toggle">

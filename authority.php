@@ -83,6 +83,7 @@
         <li class="active"><a href="authority.php"><i class="icon-user"></i> User List</a></li>
         <li><a href="airport.php"><i class="icon-plane"></i> Airport List</a></li>
         <li><a href="country.php"><i class="icon-globe"></i> Country List</a></li>
+        <li><a href="ticket_search.php"><i class="icon-ok-circle"></i> Ticket Search</a></li>
         <li><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
     </ul>
     <strong><font color="#FF0000"><?php echo $_SESSION['Error']; ?></font></strong>

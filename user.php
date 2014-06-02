@@ -86,6 +86,7 @@ include_once('config.php');
     <h3>Hello, <?php echo $_SESSION['account']; ?></h3>
     <ul class="nav nav-tabs">
         <li class="active"><a href="main.php"><i class="icon-home"></i> Home</a></li>
+        <li><a href="ticket_search.php"><i class="icon-ok-circle"></i> Ticket Search</a></li>
         <li><a href="compare.php"><i class="icon-heart"></i> Comparison Sheet</a></li>
         
     </ul>
